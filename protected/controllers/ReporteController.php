@@ -384,7 +384,7 @@ class ReporteController extends Controller
 
 				$resp = 1;
 				$msg = "Zip generado correctamente.";
-				$ruta = "/paneladministrativo/zip/".$id.".zip";
+				$ruta = "/paneladm/zip/".$id.".zip";
 				$archivo = "Soportes_".date('Y-m-d H_i_s').".zip";
 				$resp = array('resp' => $resp, 'msg' => $msg, 'ruta' => $ruta, 'archivo' => $archivo);
 		    echo json_encode($resp);
