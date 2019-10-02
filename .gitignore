@@ -3,4 +3,10 @@ assets/*
 protected/runtime/*
 !protected/runtime/.gitignore
 protected/data/*.db
-themes/classic/views/
+protected/config/*
+images/docs_contratos/*
+images/docs_equipos_licencias/*
+images/docs_pc_ext/*
+images/docs_pc_nac/*
+images/docs_pc_reg/*
+zip/*
