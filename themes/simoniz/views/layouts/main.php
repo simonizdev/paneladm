@@ -348,6 +348,11 @@ b.name_app {
   font-weight: 1000;
 }
 
+.slimScrollBar{
+  background: rgb(255, 255, 255) !important;
+  width: 5px !important;
+}
+
 /*Estilos tree*/
 
 </style>
