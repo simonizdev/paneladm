@@ -26,7 +26,7 @@ $lista_proveedores = CHtml::listData($proveedores, 'Id_Proveedor', 'Proveedor');
 
 ?>
 
-<h3>Administración de equipos y licencias</h3>
+<h3>Administración de equipos</h3>
 
 <div class="btn-group" style="padding-bottom: 2%">
    <button type="button" class="btn btn-success" onclick="location.href = '<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=equipo/create'; ?>';"><i class="fa fa-plus"></i> Nuevo registro</button>

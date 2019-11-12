@@ -29,10 +29,7 @@
  */
 class Equipo extends CActiveRecord
 {
-	
 
-	public $usuario_creacion;
-	public $usuario_actualizacion;
 	public $orderby;
 	public $sop;
 
@@ -113,8 +110,6 @@ class Equipo extends CActiveRecord
 			'Fecha_Creacion' => 'Fecha de creación',
 			'Id_Usuario_Actualizacion' => 'Usuario que actualizó',
 			'Fecha_Actualizacion' => 'Fecha de actualización',
-			'usuario_creacion' => 'Usuario que creo',
-			'usuario_actualizacion' => 'Usuario que actualizó',
 			'orderby' => 'Orden de resultados',
 			'sop' => 'Soporte',
 			'Modelo' => 'Modelo',

@@ -59,46 +59,15 @@ class EquipoController extends Controller
 			$asociacion = 0;
 		}
 
-		//Licencias de S.O asociados a equipo
-		$model_so=new EquipoSo('search');
-		$model_so->unsetAttributes();  // clear any default values
-		$model_so->Id_Equipo = $id;
-
-		//Licencias de office asociados a equipo
-		$model_off=new EquipoOffice('search');
-		$model_off->unsetAttributes();  // clear any default values
-		$model_off->Id_Equipo = $id;
-
-		//Licencias de adobe asociados a equipo
-		$model_adobe=new EquipoAdobe('search');
-		$model_adobe->unsetAttributes();  // clear any default values
-		$model_adobe->Id_Equipo = $id;
-
-		//Licencias de autodesk asociados a equipo
-		$model_autodesk=new EquipoAutodesk('search');
-		$model_autodesk->unsetAttributes();  // clear any default values
-		$model_autodesk->Id_Equipo = $id;
-
-		//Licencias de antivirus asociados a equipo
-		$model_antivirus=new EquipoAntivirus('search');
-		$model_antivirus->unsetAttributes();  // clear any default values
-		$model_antivirus->Id_Equipo = $id;
-
-		//Otras licencias / productos asociados a equipo
-		$model_ol=new EquipoOl('search');
-		$model_ol->unsetAttributes();  // clear any default values
-		$model_ol->Id_Equipo = $id;
-
+		//Licencias asociadas a equipo
+		$licencias=new LicenciaEquipo('search');
+		$licencias->unsetAttributes();  // clear any default values
+		$licencias->Id_Equipo = $id;
 
 		$this->render('view',array(
 			'model'=> $model,
 			'asociacion'=> $asociacion,
-			'model_so'=> $model_so,
-			'model_off'=> $model_off,
-			'model_adobe'=> $model_adobe,
-			'model_autodesk'=> $model_autodesk,
-			'model_antivirus'=> $model_antivirus,
-			'model_ol'=> $model_ol,
+			'licencias'=> $licencias,
 		));
 	}
 

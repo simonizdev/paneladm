@@ -49,7 +49,7 @@ class Reporte extends CFormModel
             'tipo_equipo'=>'Tipo de equipo',
             'fecha_compra_inicial'=>'Fecha compra inicial',
             'fecha_compra_final'=>'Fecha compra final',
-            'inc_lic'=>'Incluir licencias',
+            'inc_lic'=>'Incluir licencia(s)',
             'opcion_exp'=>'Exportar a',
             'tipo_lic'=>'Tipo de licencia',
             'version'=>'Versión',

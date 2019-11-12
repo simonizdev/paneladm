@@ -6,12 +6,15 @@
 //para combos de tipos de equipo
 $lista_tipos_equipo = CHtml::listData($tipos_equipo, 'Id_Dominio', 'Dominio');
 
+//para combos clases de licencia
+$lista_clases_licencia = CHtml::listData($clases_licencias, 'Id_Dominio', 'Dominio');
+
 //para combos de empresas
 $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
 
 ?>
 
-<h3>Soportes de equipos / licencias</h3>
+<h3>Soportes equipos / licencias</h3>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'reporte-form',
@@ -138,10 +141,23 @@ $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
   <div class="col-sm-12">
   	<div class="form-group">
       <?php echo $form->error($model,'inc_lic', array('class' => 'pull-right badge bg-red')); ?>
-      <?php echo $form->label($model,'inc_lic'); ?><br>
-      <?php echo $form->checkBoxList($model, 'inc_lic', array('1'=>'S.O','2'=>'Office'),array('class'=>'')); ?>
-
-
+      <?php echo $form->label($model,'inc_lic'); ?>
+      <?php
+          $this->widget('ext.select2.ESelect2',array(
+              'name'=>'Reporte[inc_lic]',
+              'id'=>'Reporte_inc_lic',
+              'data'=>$lista_clases_licencia,
+              'htmlOptions'=>array(
+                  'multiple'=>'multiple',
+              ),
+              'options'=>array(
+                  'placeholder'=>'Seleccione...',
+                  'width'=> '100%',
+                  'allowClear'=>true,
+              ),
+          ));
+      ?>
+      <?php //echo $form->checkBoxList($model, 'inc_lic', array('1'=>'S.O','2'=>'Office'),array('class'=>'')); ?>
     </div>
   </div> 
 </div>
@@ -167,22 +183,26 @@ $(function() {
     $('#div_equipo').hide();
     $('#Reporte_equipo').val('').trigger('change');
     $('#s2id_Reporte_equipo span').html("");
+    
     $('#Reporte_equipo_em_').html('');
     $('#Reporte_equipo_em_').hide();
+    
     $('#div_f_i').hide();
     $("#Reporte_fecha_compra_inicial").val(); 
+    
     $('#div_f_f').hide();
     $("#Reporte_fecha_compra_final").val();
+    
     $('#div_empresa').hide();
     $('#Reporte_empresa_compra_em_').html('');
     $('#Reporte_empresa_compra_em_').hide();
     $('#Reporte_empresa_compra').val('').trigger('change');
+    
     $('#div_tipos').hide();
     $('#Reporte_tipo_equipo').val('').trigger('change');
+    
     $('#div_inc_lic').hide();
-    $("input[type=checkbox]:checked").each(function(){
-      $(this).prop('checked', false);
-    });
+    $('#Reporte_inc_lic').val('').trigger('change');
 
     if(opc != ""){
       if(opc == 1){
@@ -215,6 +235,13 @@ $(function() {
     }
   });
 
+  $('#Reporte_inc_lic').change(function(){
+    if(this.value != ""){
+      $('#Reporte_inc_lic_em_').html('');
+      $('#Reporte_inc_lic_em_').hide(); 
+    }
+  });
+
   $("#valida_form").click(function() {
 
       var form = $("#reporte-form");
@@ -231,7 +258,8 @@ $(function() {
           var fecha_compra_inicial = $('#Reporte_fecha_compra_inicial').val();
           var fecha_compra_final = $('#Reporte_fecha_compra_final').val();
           var empresa_compra = $('#Reporte_empresa_compra').val();
-          
+          var inc_lic = $('#Reporte_inc_lic').val();
+
           var cad_tipos_equipo = "";
 
           $('#Reporte_tipo_equipo :selected').each(function(i, sel){ 
@@ -244,42 +272,79 @@ $(function() {
             var tipos_equipo = "";  
           }
 
-          var cad_inc_lic = "";
+          /*var cad_inc_lic = "";
 
-          $("input[type=checkbox]:checked").each(function(){
-            cad_inc_lic += $(this).val()+',';
+          $('#Reporte_inc_lic :selected').each(function(i, sel){ 
+              cad_inc_lic += $(sel).val()+','; 
           });
 
-          if(cad_inc_lic != ""){
-            var inc_lic = cad_inc_lic.slice(0,-1);
-          }else{
-            var inc_lic = "";  
-          }
-
-
-          //alert(tipos_equipo);
+          var inc_lic = cad_tipos_equipo.slice(0,-1);*/
 
           if(opc == 1){
             //individual
-            if(serial == ""){
-              $('#Reporte_equipo_em_').html('Serial no puede ser nulo.');
-              $('#Reporte_equipo_em_').show();
+            if(serial == "" ||  inc_lic == ""){
+
+              if(serial == ""){
+                $('#Reporte_equipo_em_').html('Serial no puede ser nulo.');
+                $('#Reporte_equipo_em_').show(); 
+              }
+
+              if(inc_lic == ""){
+                $('#Reporte_inc_lic_em_').html('Incluir licencia(s) no puede ser nulo.');
+                $('#Reporte_inc_lic_em_').show(); 
+              }
+
               $valid = 0;
+
             }else{
               $('#Reporte_equipo_em_').html('');
               $('#Reporte_equipo_em_').hide();
+
+              $('#Reporte_inc_lic_em_').html('');
+              $('#Reporte_inc_lic_em_').hide();
+
+              var cad_inc_lic = "";
+
+              $('#Reporte_inc_lic :selected').each(function(i, sel){ 
+                  cad_inc_lic += $(sel).val()+','; 
+              });
+
+              var inc_lic = cad_inc_lic.slice(0,-1);
+
               $valid = 1;
             }
           }else{
             //grupo
-            if(empresa_compra == ""){
-              $('#Reporte_empresa_compra_em_').html('Empresa no puede ser nulo.');
-              $('#Reporte_empresa_compra_em_').show();
+            if(empresa_compra == "" ||  inc_lic == ""){
+              
+              if(empresa_compra == ""){
+                $('#Reporte_empresa_compra_em_').html('Empresa no puede ser nulo.');
+                $('#Reporte_empresa_compra_em_').show();
+              }
+
+
+              if(inc_lic == ""){
+                $('#Reporte_inc_lic_em_').html('Incluir licencia(s) no puede ser nulo.');
+                $('#Reporte_inc_lic_em_').show(); 
+              }
+
               $valid = 0;
 
             }else{
               $('#Reporte_empresa_compra_em_').html('');
               $('#Reporte_empresa_compra_em_').hide();
+
+              $('#Reporte_inc_lic_em_').html('');
+              $('#Reporte_inc_lic_em_').hide();
+
+              var cad_inc_lic = "";
+
+              $('#Reporte_inc_lic :selected').each(function(i, sel){ 
+                  cad_inc_lic += $(sel).val()+','; 
+              });
+
+              var inc_lic = cad_inc_lic.slice(0,-1);
+
               $valid = 1;
             }
           }
@@ -384,9 +449,6 @@ $(function() {
 
 function resetfields(){
   $('#Reporte_opc').val('').trigger('change');
-  $("input[type=checkbox]:checked").each(function(){
-    $(this).prop('checked', false);
-  });
 }
 
 function clear_select2_ajax(id){

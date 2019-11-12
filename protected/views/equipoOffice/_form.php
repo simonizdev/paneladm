@@ -326,35 +326,54 @@ $(function() {
 	   $('#EquipoOffice_Fecha_Inicio').datepicker('setEndDate', maxDate);
 	});
 
-  	$("#EquipoOffice_sop").change(function () {
 
-  		$('#error_sop').html('');
-    	$('#error_sop').hide();
+  $("#Licencia_Fecha_Inicio_Sop").datepicker({
+    language: 'es',
+    autoclose: true,
+    orientation: "right bottom",
+  }).on('changeDate', function (selected) {
+     var minDate = new Date(selected.date.valueOf());
+     $('#Licencia_Fecha_Final_Sop').datepicker('setStartDate', minDate);
+  });
 
-  		if(validarExtension(this, 1)) {
+  $("#Licencia_Fecha_Final_Sop").datepicker({
+    language: 'es',
+    autoclose: true,
+    orientation: "right bottom",
+  }).on('changeDate', function (selected) {
+     var maxDate = new Date(selected.date.valueOf());
+     $('#Licencia_Fecha_Inicio_Sop').datepicker('setEndDate', maxDate);
+  });
 
-  	    	if(validarPeso(this, 1)) {
+	$("#EquipoOffice_sop").change(function () {
 
-  	    		$('#valid_doc').val(1);
+		$('#error_sop').html('');
+  	$('#error_sop').hide();
 
-  	    	}
-  		}  
-    });
+		if(validarExtension(this, 1)) {
 
-    $("#EquipoOffice_sop2").change(function () {
+	    	if(validarPeso(this, 1)) {
 
-      $('#error_sop2').html('');
-      $('#error_sop2').hide();
+	    		$('#valid_doc').val(1);
 
-      if(validarExtension(this, 2)) {
+	    	}
+		}  
+  });
 
-          if(validarPeso(this, 2)) {
+  $("#EquipoOffice_sop2").change(function () {
 
-            $('#valid_doc2').val(1);
+    $('#error_sop2').html('');
+    $('#error_sop2').hide();
 
-          }
-      }  
-    });
+    if(validarExtension(this, 2)) {
+
+        if(validarPeso(this, 2)) {
+
+          $('#valid_doc2').val(1);
+
+        }
+    }  
+  });
 
 
 	// Validacion de extensiones permitidas

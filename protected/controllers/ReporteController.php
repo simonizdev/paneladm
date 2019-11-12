@@ -64,11 +64,14 @@ class ReporteController extends Controller
 
 		$tipos_equipo= Yii::app()->db->createCommand('SELECT te.Id_Dominio, te.Dominio FROM TH_DOMINIO te WHERE te.Id_Padre = '.Yii::app()->params->tipo_equipo.' AND te.Estado = 1 ORDER BY te.Dominio')->queryAll();
 
+		$clases_licencias= Yii::app()->db->createCommand('SELECT te.Id_Dominio, te.Dominio FROM TH_DOMINIO te WHERE te.Id_Padre = '.Yii::app()->params->clase_licencia.' AND te.Estado = 1 ORDER BY te.Dominio')->queryAll();
+
 		$empresas= Yii::app()->db->createCommand('SELECT e.Id_Empresa, e.Descripcion FROM TH_EMPRESA e WHERE e.Estado = 1 ORDER BY e.Descripcion')->queryAll();
 
 		$this->render('zip_soportes',array(
 			'model'=>$model,
 			'tipos_equipo'=>$tipos_equipo,
+			'clases_licencias'=>$clases_licencias,
 			'empresas'=>$empresas,
 		));
 	}
@@ -83,7 +86,7 @@ class ReporteController extends Controller
 		$fecha_compra_final = $_POST['fecha_compra_final'];
 		$empresa_compra = $_POST['empresa_compra'];
 		$tipos_equipo = $_POST['tipos_equipo'];
-		$inc_lic = $_POST['inc_lic']; 
+		$inc_lic = $_POST['inc_lic'];  
 
 		if($opc == 1){
 		  //individual
@@ -91,7 +94,7 @@ class ReporteController extends Controller
 		  $query = "SELECT Id_Equipo, Serial, Doc_Soporte FROM TH_EQUIPO WHERE Estado = 1";
 
 		  if($serial != ""){
-		    $query .= " AND Id_Equipo = ".$serial;  
+    		$query .= " AND Id_Equipo = ".$serial;  
 		  }
 
 		}
@@ -120,10 +123,9 @@ class ReporteController extends Controller
 
 		$q_equipos = Yii::app()->db->createCommand($query)->queryAll();
 
-
 		if(empty($q_equipos)){
 			$resp = 0;
-			$msg = "No se encontraron soportes de equipos con los filtros aplicados.";
+			$msg = "No se encontraron soportes de equipos / licencias con los filtros aplicados.";
 			$ruta = "";
 			$archivo = "";
 			$resp = array('resp' => $resp, 'msg' => $msg, 'ruta' => $ruta, 'archivo' => $archivo);
@@ -133,12 +135,23 @@ class ReporteController extends Controller
 			//se empieza a generar el zip de acuerdo a los equipos y licencias relacionadas
 
 			$array_ids = array();
-			$array_equipos_seriales = array();
-			$array_equipos_soportes = array();
-			$array_so_seriales = array();
-			$array_so_soportes = array();
-			$array_office_seriales = array();
-			$array_office_soportes = array();
+			$array_seriales_equipos = array();
+			$array_soportes_equipos = array();
+
+			$array_seriales = array();
+			$array_soportes = array();
+
+
+			$q_clases_lic = Yii::app()->db->createCommand("SELECT Id_Dominio, Dominio FROM TH_DOMINIO WHERE Id_Dominio IN (".$inc_lic.")")->queryAll(); 
+
+	    foreach ($q_clases_lic as $cl) {
+
+	    	$clase = $cl['Dominio'];
+	    	$array_seriales[$clase] = array();
+	    	$array_soportes[$clase] = array();
+			}
+
+			//equipos
 
 			foreach ($q_equipos as $reg) {
 
@@ -151,77 +164,55 @@ class ReporteController extends Controller
 			  $ruta_sop_equipo = Yii::app()->basePath.'/../images/docs_equipos_licencias/equipos/'.$Doc_Soporte_Equipo;
 			        
 			  if(file_exists($ruta_sop_equipo)){
-			  	array_push($array_equipos_seriales, $Serial);
-			    array_push($array_equipos_soportes, $Doc_Soporte_Equipo);
+			  	array_push($array_seriales_equipos, $Serial);
+			    array_push($array_soportes_equipos, $Doc_Soporte_Equipo);
 			  }
 
-			  if($inc_lic != ""){
-			  	//se deben incluir en las busqueda licencias de S.O y/o Office
+			  //licencias
 
-			  	$inc_licencias = explode(",", $inc_lic);
+		    foreach ($q_clases_lic as $cl) {
 
-			  	if(in_array(1, $inc_licencias)){
-			  		//S.O
-			  		$modelo_so = EquipoSo::model()->findAllByAttributes(array('Id_Equipo' => $Id_Equipo, 'Estado' => 1));
+		    	$id_clase = $cl['Id_Dominio'];
+		    	$clase = $cl['Dominio'];
 
-			  		if(!empty($modelo_so)){
-			  			foreach ($modelo_so as $so_equipo) {
+	    		$sop_lic = Yii::app()->db->createCommand("
+	    			SELECT 
+	    			L.Id_Licencia,
+	    			L.Doc_Soporte,
+	    			L.Doc_Soporte2
+	    			FROM TH_LICENCIA_EQUIPO LE
+						LEFT JOIN TH_LICENCIA L ON LE.Id_Licencia = L.Id_Lic
+	    			WHERE L.Clasificacion = ".$id_clase." AND L.Estado = 1 AND LE.Estado = 1 AND LE.Id_Equipo = ".$Id_Equipo."
+	    		")->queryAll();
 
-			  				$Doc_Soporte_SO = $so_equipo->Doc_Soporte;
-			  				$Doc_Soporte_SO2 = $so_equipo->Doc_Soporte2;
+	    		if(!empty($sop_lic)){
+	    			foreach ($sop_lic as $licen) {
 
-	  						$ruta_sop_so = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_SO;
+		  				$Doc_Soporte_SO = $licen['Doc_Soporte'];
+		  				$Doc_Soporte_SO2 = $licen['Doc_Soporte2'];
 
-	  						if(file_exists($ruta_sop_so)){
-							  	array_push($array_so_seriales, $Serial);
-							    array_push($array_so_soportes, $Doc_Soporte_SO);
+  						$ruta_sop_so = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_SO;
+
+  						if(file_exists($ruta_sop_so)){
+						  	array_push($array_seriales[$clase], $Serial);
+						    array_push($array_soportes[$clase], $Doc_Soporte_SO);
+						  }
+
+						  if($Doc_Soporte_SO2 != ""){
+				  			$ruta_sop_so2 = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_SO2;
+
+	  						if(file_exists($ruta_sop_so2)){
+							  	array_push($array_seriales[$clase], $Serial);
+							    array_push($array_soportes[$clase], $Doc_Soporte_SO2);
 							  }
-
-							  if($Doc_Soporte_SO2 != ""){
-					  			$ruta_sop_so2 = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_SO2;
-
-		  						if(file_exists($ruta_sop_so2)){
-								  	array_push($array_so_seriales, $Serial);
-								    array_push($array_so_soportes, $Doc_Soporte_SO2);
-								  }
-							  }
-			  			}
-			  		}
-			  	}
-
-			  	if(in_array(2, $inc_licencias)){
-			  		//Office
-			  		$modelo_office = EquipoOffice::model()->findAllByAttributes(array('Id_Equipo' => $Id_Equipo, 'Estado' => 1));
-
-			  		if(!empty($modelo_office)){
-			  			foreach ($modelo_office as $office_equipo) {
-
-			  				$Doc_Soporte_Office = $office_equipo->Doc_Soporte;
-			  				$Doc_Soporte_Office2 = $office_equipo->Doc_Soporte2;
-
-	  						$ruta_sop_office = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_Office;
-
-	  						if(file_exists($ruta_sop_office)){
-							  	array_push($array_office_seriales, $Serial);
-							    array_push($array_office_soportes, $Doc_Soporte_Office);
-							  }
-
-							  if($Doc_Soporte_Office2 != ""){
-					  			$ruta_sop_office2 = Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$Doc_Soporte_Office2;
-
-		  						if(file_exists($ruta_sop_office2)){
-								  	array_push($array_office_seriales, $Serial);
-								    array_push($array_office_soportes, $Doc_Soporte_Office2);
-								  }
-							  }
-			  			}
-			  		}
-			  	}
-			 	}
+						  }
+		  			}
+	    		}
+			  }
 			}
 
 			//se recorre el array
-			if(!empty($array_equipos_seriales)){
+			if(!empty($array_seriales_equipos)){
 
 				//se borran los archivos .zip y .txt que estaban en la carpeta
 
@@ -232,17 +223,17 @@ class ReporteController extends Controller
 				}
 
 				//se crea el texto especificando que filtros de busqueda se utilizaron
-			  $txt_info = fopen(Yii::app()->basePath.'/../zip/filtro_busqueda.txt', 'w');
+		  	$txt_info = fopen(Yii::app()->basePath.'/../zip/filtro_busqueda.txt', 'w');
 
-			  fwrite($txt_info, "Filtros de busqueda: " . PHP_EOL);
+		  	fwrite($txt_info, "Filtros de busqueda: " . PHP_EOL);
 
-			  if($opc == 1){
-				  //individual
+		  	if($opc == 1){
+			  	//individual
 
-				  if($serial != ""){
-				  	$modelo_equipo = Equipo::model()->findByPk($serial);
-				    fwrite($txt_info, "Serial:  ".$modelo_equipo->Serial. PHP_EOL);
-				  } 
+			  	if($serial != ""){
+			  		$modelo_equipo = Equipo::model()->findByPk($serial);
+			    	fwrite($txt_info, "Serial:  ".$modelo_equipo->Serial. PHP_EOL);
+			  	} 
 
 				}
 
@@ -280,99 +271,78 @@ class ReporteController extends Controller
 				
 				}
 
-				$inc_licencias = explode(",", $inc_lic);
+		    $cadena_lic = "";
 
-		  	if(in_array(1, $inc_licencias) && in_array(2, $inc_licencias)){
-		  		fwrite($txt_info, "Incluir Licencias:  S.O, Office". PHP_EOL);
-		  	}else{
-		  		if(in_array(1, $inc_licencias) && !in_array(2, $inc_licencias)){
-		  			fwrite($txt_info, "Incluir Licencias:  S.O". PHP_EOL);
-		  		}else{
-		  			if(!in_array(1, $inc_licencias) && in_array(2, $inc_licencias)){
-		  				fwrite($txt_info, "Incluir Licencias:  Office". PHP_EOL);	
-		  			}
-		  		}
-		  	}
+		    foreach ($q_clases_lic as $clase) {
+
+			  	$cadena_lic .= $clase['Dominio'].", ";
+
+			  }
+
+			  fwrite($txt_info, "Incluir licencia(s):  ".substr($cadena_lic, 0, -2). PHP_EOL);
 
 				fclose($txt_info); 
 
 				$rnd = rand(0,99999);
-			  $id = $rnd;
-			  $ruta_zip = Yii::app()->basePath.'/../zip/'.$id.'.zip';
+				$id = $rnd;
+				$ruta_zip = Yii::app()->basePath.'/../zip/'.$id.'.zip';
 
-			  //se declara un nuevo objeto ZIP
-			  $zip = new ZipArchive(); 
+				//se declara un nuevo objeto ZIP
+				$zip = new ZipArchive(); 
 
-			  $zip->open($ruta_zip, ZipArchive::CREATE);
+		  	$zip->open($ruta_zip, ZipArchive::CREATE);
 
-	  		//se añade el directorio de equipos dentro del zip
-			  $dir_equipos = 'equipos';
-			  $zip->addEmptyDir($dir_equipos);
+  			//se añade el directorio de equipos dentro del zip
+		  	$dir_equipos = 'EQUIPOS';
+		  	$zip->addEmptyDir($dir_equipos);
 
-			  foreach ($array_equipos_soportes as $key => $value) {
-			    
-			    $soporte_equipo = $value;
-			    $info_soporte_equipo = new SplFileInfo($soporte_equipo);
-			    $ext = $info_soporte_equipo->getExtension();
+		  	foreach ($array_soportes_equipos as $key => $value) {
+		    
+		    	$soporte_equipo = $value;
+		    	$info_soporte_equipo = new SplFileInfo($soporte_equipo);
+		    	$ext = $info_soporte_equipo->getExtension();
 
-			    $zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/equipos/'.$value, $dir_equipos.'/'.trim($array_equipos_seriales[$key].'.'.$ext));
+		    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/equipos/'.$value, $dir_equipos.'/'.trim($array_seriales_equipos[$key].'.'.$ext));
+
+		  	}
+
+		  	foreach ($q_clases_lic as $cl) {
+
+		    	$clase = $cl['Dominio'];
+
+					if(!empty($array_soportes[$clase])){
+
+						$dir = $clase;
+			  		$zip->addEmptyDir($dir);
+
+			  		$serial_act = "";
+
+			  		$c = 1;
+
+				  	foreach ($array_soportes[$clase] as $key => $value) {
+
+					    $soporte_so = $value;
+					    $info_soporte_so = new SplFileInfo($soporte_so);
+					    $ext = $info_soporte_so->getExtension();
+
+					    $serial = $array_seriales[$clase][$key];
+
+					    if($serial == $serial_act){
+					    	$c = $c + 1;
+					    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir.'/'.trim($array_seriales[$clase][$key].'_'.$c.'.'.$ext));
+					    }else{
+					    	$c = 1;
+					    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir.'/'.trim($array_seriales[$clase][$key].'_'.$c.'.'.$ext));
+					    }
+
+					    $serial_act = $serial;
+
+					  }
+
+					}
 
 			  }
-
-			  //S.O
-			  if(!empty($array_so_soportes)){
-
-		  		$dir_so = 'so';
-		  		$zip->addEmptyDir($dir_so);
-
-		  		$serial_so_act = "";
-
-			  	foreach ($array_so_soportes as $key => $value) {
-			    
-				    $soporte_so = $value;
-				    $info_soporte_so = new SplFileInfo($soporte_so);
-				    $ext = $info_soporte_so->getExtension();
-
-				    $serial_so = $array_so_seriales[$key];
-
-				    if($serial_so == $serial_so_act){
-				    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir_so.'/'.trim($array_so_seriales[$key].'_2.'.$ext));
-				    }else{
-				    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir_so.'/'.trim($array_so_seriales[$key].'.'.$ext));
-				    }
-
-				    $serial_so_act = $serial_so;
-
-				  }
-			  }
-
-			  //Office
-			  if(!empty($array_office_soportes)){
-
-		  		$dir_office = 'office';
-		  		$zip->addEmptyDir($dir_office);
-
-		  		$serial_office_act = "";
-
-			  	foreach ($array_office_soportes as $key => $value) {
-			    
-				    $soporte_office = $value;
-				    $info_soporte_office = new SplFileInfo($soporte_office);
-				    $ext = $info_soporte_office->getExtension();
-
-				    $serial_office = $array_office_seriales[$key];
-
-				    if($serial_office == $serial_office_act){
-				    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir_office.'/'.trim($array_office_seriales[$key].'_2.'.$ext));
-				    }else{
-				    	$zip->addFile(Yii::app()->basePath.'/../images/docs_equipos_licencias/licencias/'.$value, $dir_office.'/'.trim($array_office_seriales[$key].'.'.$ext));
-				    }
-
-				    $serial_office_act = $serial_office;
-
-				  }
-			  }
-
+			  
 			  //se añade txt con info de los filtros aplicados en el reporte
 			  $zip->addFile(Yii::app()->basePath.'/../zip/filtro_busqueda.txt', 'filtro_busqueda.txt');
 	 

@@ -22,7 +22,7 @@
 
 <div class="row">
  	<div class="col-sm-4">
-    	<?php echo $form->label($model,'Id_Equipo'); ?>
+    	 <?php echo $form->label($model,'Id_Equipo'); ?>
         <?php echo '<p>'.UtilidadesVarias::descequipo($e).'</p>'; ?>     
     </div>
   	<div class="col-sm-4">

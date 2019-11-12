@@ -144,7 +144,7 @@ $(function() {
 
       if(soporte == ''){
       	$('#error_sop').html('Soporte no puede ser nulo');
-      	$('#error_sop').show();
+      	$('#error_sop').show(); 
       }
 
       settings.submitting = true ;
@@ -173,7 +173,7 @@ $(function() {
               $.each(settings.attributes, function () {
                  $.fn.yiiactiveform.updateInput(this,messages,form); 
               });
-              settings.submitting = false ;
+              settings.submitting = false;
           }
       });
   	});
