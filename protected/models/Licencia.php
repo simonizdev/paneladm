@@ -76,7 +76,8 @@ class Licencia extends CActiveRecord
 			array('Clasificacion, Tipo, Version, Producto, Cant_Usuarios, Ubicacion, Empresa_Compra, Proveedor, Valor_Comercial, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Id_Licencia, Num_Licencia, Password, Token, Numero_Inventario, Numero_Factura', 'length', 'max'=>200),
 			array('Doc_Soporte, Doc_Soporte2', 'length', 'max'=>50),
-			array('Cuenta_Registro, Link', 'length', 'max'=>100),
+			array('Cuenta_Registro', 'length', 'max'=>100),
+			array('Link', 'length', 'max'=>500),
 			array('Fecha_Factura, Fecha_Inicio, Fecha_Final, Fecha_Inicio_Sop, Fecha_Final_Sop, Notas', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
