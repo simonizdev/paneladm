@@ -239,7 +239,7 @@
     <div class="form-group">
       <?php echo $form->error($model,'Link', array('class' => 'pull-right badge bg-red')); ?>
       <?php echo $form->label($model,'Link'); ?>
-      <?php echo $form->textField($model,'Link', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off')); ?>
+      <?php echo $form->textField($model,'Link', array('class' => 'form-control', 'autocomplete' => 'off')); ?>
     </div>
   </div>
   <div class="col-sm-4">
