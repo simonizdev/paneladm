@@ -236,7 +236,7 @@
                         <?php echo '<p>'.$Cuenta_Registro.'</p>';?>
                     </div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-3" style="word-wrap: break-word;">
                     <div class="form-group">
                         <label>Link</label>
                         <?php if($model->Link == "") { $Link = "-"; } else { $Link = $model->Link; } ?>
@@ -265,7 +265,7 @@
                         <?php echo '<p>'.$Ubicacion.'</p>';?>
                     </div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-3" style="word-wrap: break-word;">
                     <div class="form-group">
                         <label>Notas</label>
                         <?php if($model->Notas == "") { $Notas = "-"; } else { $Notas = $model->Notas; } ?>
