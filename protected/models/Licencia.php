@@ -72,7 +72,7 @@ class Licencia extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Clasificacion, Tipo, Version, Num_Licencia, Cant_Usuarios, Ubicacion, Doc_Soporte, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
+			array('Clasificacion, Tipo, Version, Num_Licencia, Cant_Usuarios, Ubicacion, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
 			array('Clasificacion, Tipo, Version, Producto, Cant_Usuarios, Ubicacion, Empresa_Compra, Proveedor, Valor_Comercial, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Id_Licencia, Num_Licencia, Password, Token, Numero_Inventario, Numero_Factura', 'length', 'max'=>200),
 			array('Doc_Soporte, Doc_Soporte2', 'length', 'max'=>300),
@@ -224,6 +224,7 @@ class Licencia extends CActiveRecord
 		$criteria->compare('t.Id_Lic',$this->Id_Lic);
 		$criteria->compare('t.Num_Licencia',$this->Num_Licencia,true);
 		$criteria->compare('t.Cant_Usuarios',$this->Cant_Usuarios);
+		$criteria->compare('t.Numero_Factura',$this->Numero_Factura,true);
 
 		if(empty($this->orderby)){
 			$criteria->order = 'clasificacion.Dominio ASC, tipo.Dominio ASC, version.Dominio ASC'; 	

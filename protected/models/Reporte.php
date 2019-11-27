@@ -13,6 +13,7 @@ class Reporte extends CFormModel
     public $opcion_exp;
     public $tipo_lic;
     public $version;
+    public $clasif;
 
     public function rules() {
         // NOTE: you should only define rules for those attributes that
@@ -20,7 +21,7 @@ class Reporte extends CFormModel
         return array(
             array('fecha_factura_inicial, fecha_factura_final', 'safe'),
             array('opc', 'required','on'=>'zip_soportes'),
-            array('opcion_exp', 'required','on'=>'est_equipos'),
+            array('opcion_exp', 'required','on'=>'lic_disp'),
             array('tipo_lic, opcion_exp', 'required','on'=>'lic_equipos'),                  
         );  
     }
@@ -53,6 +54,7 @@ class Reporte extends CFormModel
             'opcion_exp'=>'Exportar a',
             'tipo_lic'=>'Tipo de licencia',
             'version'=>'Versión',
+            'clasif'=>'Clasif.',
         );
     }
 

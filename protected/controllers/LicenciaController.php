@@ -32,7 +32,7 @@ class LicenciaController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','ret'),
+				'actions'=>array('create','update','ret', 'export', 'exportexcel'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -310,6 +310,12 @@ class LicenciaController extends Controller
 	 */
 	public function actionAdmin()
 	{
+		
+		if(Yii::app()->request->getParam('export')) {
+    		$this->actionExport();
+    		Yii::app()->end();
+		}
+
 		$model=new Licencia('search');
 
 		$clases=Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Id_Padre = '.Yii::app()->params->clase_licencia));
@@ -389,5 +395,28 @@ class LicenciaController extends Controller
 			$this->redirect(array('admin'));
 
 		}
+	}
+
+	public function actionExport(){
+    	
+    	$model=new Licencia('search');
+	    $model->unsetAttributes();  // clear any default values
+	    
+	    if(isset($_GET['Licencia'])) {
+	        $model->attributes=$_GET['Licencia'];
+	    }
+
+    	$dp = $model->search();
+		$dp->setPagination(false);
+ 
+		$data = $dp->getData();
+
+		Yii::app()->user->setState('licencia-export',$data);
+	}
+
+	public function actionExportExcel()
+	{
+		$data = Yii::app()->user->getState('licencia-export');
+		$this->renderPartial('licencia_export_excel',array('data' => $data));	
 	}
 }

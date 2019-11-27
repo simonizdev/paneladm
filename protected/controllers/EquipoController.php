@@ -32,7 +32,7 @@ class EquipoController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update', 'export', 'exportexcel'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -138,6 +138,8 @@ class EquipoController extends Controller
 
 		$model=$this->loadModel($id);
 
+		$estado_act = $model->Estado;
+
 		$model->scenario = 'update';
 
 		$ruta_doc_actual = Yii::app()->basePath.'/../images/docs_equipos_licencias/equipos/'.$model->Doc_Soporte;
@@ -162,11 +164,38 @@ class EquipoController extends Controller
  
             if($model->save()){
             	if($opc == 1){
+            		
             		if (file_exists($ruta_doc_actual)) {
             			unlink($ruta_doc_actual);
             		}
+
                 	$documento_subido->saveAs(Yii::app()->basePath.'/../images/docs_equipos_licencias/equipos/'.$nombre_archivo);
             	}
+
+            	if($estado_act != $model->Estado && $model->Estado == 0){
+        			//se inactivan las licencias de clasif. S.O
+        			$model_lic = LicenciaEquipo::model()->findAllByAttributes(array('Id_Equipo' => $id, 'Estado' => 1));
+        			if(!empty($model_lic)){
+            			foreach ($model_lic as $reg) {
+            				if($reg->idlicencia->Clasificacion == Yii::app()->params->clase_licencia_so && $reg->idlicencia->Tipo == Yii::app()->params->tipo_licencia_oem){
+            					
+            					$reg->Estado = 0;
+            					$reg->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+								$reg->Fecha_Actualizacion = date('Y-m-d H:i:s');
+								$reg->save();
+            				
+								$licencia = Licencia::model()->findByPk($reg->Id_Licencia);
+								$licencia->Estado = Yii::app()->params->estado_lic_ina;
+            					$licencia->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+								$licencia->Fecha_Actualizacion = date('Y-m-d H:i:s');
+								$licencia->save();
+							
+            				}
+            			}
+            		}
+        		}
+
+
                 $this->redirect(array('admin'));
             }
 		}
@@ -209,6 +238,12 @@ class EquipoController extends Controller
 	 */
 	public function actionAdmin()
 	{
+		
+		if(Yii::app()->request->getParam('export')) {
+    		$this->actionExport();
+    		Yii::app()->end();
+		}
+
 		$model=new Equipo('search');
 
 		$tipos=Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Id_Padre = '.Yii::app()->params->tipo_equipo));
@@ -255,5 +290,28 @@ class EquipoController extends Controller
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
+	}
+
+	public function actionExport(){
+    	
+    	$model=new Equipo('search');
+	    $model->unsetAttributes();  // clear any default values
+	    
+	    if(isset($_GET['Equipo'])) {
+	        $model->attributes=$_GET['Equipo'];
+	    }
+
+    	$dp = $model->search();
+		$dp->setPagination(false);
+ 
+		$data = $dp->getData();
+
+		Yii::app()->user->setState('equipo-export',$data);
+	}
+
+	public function actionExportExcel()
+	{
+		$data = Yii::app()->user->getState('equipo-export');
+		$this->renderPartial('equipo_export_excel',array('data' => $data));	
 	}
 }

@@ -30,7 +30,7 @@ class ReporteController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform actions
-				'actions'=>array('searchequipo', 'zipsoportes','soportesequipo','estequipos','estequipospant','licequipos','loadversiones', 'licequipospant'),
+				'actions'=>array('searchequipo', 'zipsoportes','soportesequipo','licdisp','licdisppant','licequipos','loadversiones', 'licequipospant'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -362,34 +362,34 @@ class ReporteController extends Controller
 		}
 	}
 
-	public function actionEstEquipos()
+	public function actionLicDisp()
 	{		
 		$model=new Reporte;
-		$model->scenario = 'est_equipos';
+		$model->scenario = 'lic_disp';
 
-		$tipos_equipo= Yii::app()->db->createCommand('SELECT te.Id_Dominio, te.Dominio FROM TH_DOMINIO te WHERE te.Id_Padre = '.Yii::app()->params->tipo_equipo.' AND te.Estado = 1 ORDER BY te.Dominio')->queryAll();
+		$clasif_lic = Yii::app()->db->createCommand('SELECT te.Id_Dominio, te.Dominio FROM TH_DOMINIO te WHERE te.Id_Padre = '.Yii::app()->params->clase_licencia.' AND te.Estado = 1 ORDER BY te.Dominio')->queryAll();
 
-		$empresas= Yii::app()->db->createCommand('SELECT e.Id_Empresa, e.Descripcion FROM TH_EMPRESA e WHERE e.Estado = 1 ORDER BY e.Descripcion')->queryAll();
+		$empresas = Yii::app()->db->createCommand('SELECT e.Id_Empresa, e.Descripcion FROM TH_EMPRESA e WHERE e.Estado = 1 ORDER BY e.Descripcion')->queryAll();
 
 		if(isset($_POST['Reporte']))
 		{
 			$model=$_POST['Reporte'];
-			$this->renderPartial('est_equipos_resp',array('model' => $model));	
+			$this->renderPartial('lic_disp_resp',array('model' => $model));	
 		}
 
-		$this->render('est_equipos',array(
+		$this->render('lic_disp',array(
 			'model'=>$model,
-			'tipos_equipo'=>$tipos_equipo,
+			'clasif_lic'=>$clasif_lic,
 			'empresas'=>$empresas,
 		));
 	}
 
-	public function actionEstEquiposPant()
+	public function actionLicDispPant()
 	{		
 		$empresa_compra = $_POST['empresa_compra'];
-		$tipo_equipo = $_POST['tipo_equipo'];
+		$clasif = $_POST['clasif'];
 
-		$resultados = UtilidadesReportes::estequipospantalla($empresa_compra, $tipo_equipo);
+		$resultados = UtilidadesReportes::licdisppantalla($empresa_compra, $clasif);
 		echo $resultados;
 	}
 

@@ -124,6 +124,12 @@
 	    </div>
 	</div>
 	<div class="row">
+		<div class="col-sm-3">
+	    	<div class="form-group">
+	          	<?php echo $form->label($model,'Numero_Factura'); ?>
+			    <?php echo $form->textField($model,'Numero_Factura', array('class' => 'form-control', 'autocomplete' => 'off')); ?>
+	        </div>
+	    </div>
 	    <div class="col-sm-3">
 	    	<div class="form-group">
 	          	<?php echo $form->label($model,'Estado'); ?>
@@ -146,7 +152,7 @@
 	    	<div class="form-group">
 	          	<?php echo $form->label($model,'orderby'); ?>
 			    <?php 
-                	$array_orden = array(1 => 'ID ASC', 2 => 'ID DESC', 3 => 'Clasif. ASC', 4 => 'Clasif. DESC', 5 => 'Tipo ASC', 6 => 'Tipo DESC', 7 => 'Versión ASC', 8 => 'Versión DESC' , 9 => 'Producto ASC', 10 => 'Producto DESC', 11 => '# licencia ASC', 12 => '# licencia DESC', 13 => 'Usuarios x lic. ASC', 14 => 'Usuarios x lic. DESC', 15 => 'Ubicación ASC', 16 => 'Ubicación DESC', 17 => 'Estado ASC', 18 => 'Estado DESC',
+                	$array_orden = array(1 => 'ID ASC', 2 => 'ID DESC', 3 => 'Clasif. ASC', 4 => 'Clasif. DESC', 5 => 'Tipo ASC', 6 => 'Tipo DESC', 7 => 'Versión ASC', 8 => 'Versión DESC' , 9 => 'Producto ASC', 10 => 'Producto DESC', 11 => 'N° de licencia ASC', 12 => 'N° de licencia DESC', 13 => 'Usuarios x lic. ASC', 14 => 'Usuarios x lic. DESC', 15 => 'Ubicación ASC', 16 => 'Ubicación DESC', 17 => 'Estado ASC', 18 => 'Estado DESC',
                 	);
             	?>
             	<?php

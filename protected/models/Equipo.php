@@ -49,7 +49,7 @@ class Equipo extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Tipo_Equipo, Serial, Modelo, Empresa_Compra, Fecha_Compra, Proveedor, Numero_Factura, Numero_Inventario, Doc_Soporte, Estado', 'required'),
+			array('Tipo_Equipo, Serial, Modelo, Empresa_Compra, Fecha_Compra, Proveedor, Numero_Factura, Numero_Inventario, Estado', 'required'),
 			array('Serial','unique','on'=>'create'),
 			array('Serial', 'uniqueSerial','on'=>'update'),
 			array('Tipo_Equipo, Empresa_Compra, Proveedor, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),

@@ -2,15 +2,15 @@
 /* @var $this ReporteController */
 /* @var $model Reporte */
 
-//para combos de tipos de equipo
-$lista_tipos_equipo = CHtml::listData($tipos_equipo, 'Id_Dominio', 'Dominio');
+//para combos de clases de licencia
+$lista_clasif_lic = CHtml::listData($clasif_lic, 'Id_Dominio', 'Dominio');
 
 //para combos de empresas
 $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
 
 ?>
 
-<h3>Estadística de equipos</h3>
+<h3>Licencias disponibles</h3>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'reporte-form',
@@ -49,18 +49,18 @@ $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
   </div>
   <div class="col-sm-4">
     <div class="form-group">
-      <?php echo $form->error($model,'tipo_equipo', array('class' => 'pull-right badge bg-red')); ?>
-      <?php echo $form->label($model,'tipo_equipo'); ?>
+      <?php echo $form->error($model,'clasif', array('class' => 'pull-right badge bg-red')); ?>
+      <?php echo $form->label($model,'clasif'); ?>
       <?php
           $this->widget('ext.select2.ESelect2',array(
-              'name'=>'Reporte[tipo_equipo]',
-              'id'=>'Reporte_tipo_equipo',
-              'data'=>$lista_tipos_equipo,
+              'name'=>'Reporte[clasif]',
+              'id'=>'Reporte_clasif',
+              'data'=>$lista_clasif_lic,
               'htmlOptions'=>array(
-                'multiple'=>'multiple',
+                //'multiple'=>'multiple',
               ),
               'options'=>array(
-                  'placeholder'=>'TODOS',
+                  'placeholder'=>'Seleccione...',
                   'width'=> '100%',
                   'allowClear'=>true,
               ),
@@ -153,27 +153,17 @@ function reporte_pantalla(){
     var empresa_compra = "";  
   }
 
-  var cad_tipos_equipo = "";
-
-  $('#Reporte_tipo_equipo :selected').each(function(i, sel){ 
-      cad_tipos_equipo += $(sel).val()+','; 
-  });
-
-  if(cad_tipos_equipo != ""){
-    var tipo_equipo = cad_tipos_equipo.slice(0,-1);
-  }else{
-    var tipo_equipo = "";  
-  }
+  var clasif = $('#Reporte_clasif').val();
 
   var data = {
     empresa_compra: empresa_compra, 
-    tipo_equipo: tipo_equipo
+    clasif: clasif
   }
   
   $(".ajax-loader").show('fast');
   $.ajax({ 
     type: "POST", 
-    url: "<?php echo Yii::app()->createUrl('reporte/estequipospant'); ?>",
+    url: "<?php echo Yii::app()->createUrl('reporte/licdisppant'); ?>",
     data: data,
     success: function(data){ 
       $(".ajax-loader").hide('fast');
@@ -186,7 +176,7 @@ function reporte_pantalla(){
 function resetfields(){
 
   $('#Reporte_empresa_compra').val('').trigger('change');
-  $('#Reporte_tipo_equipo').val('').trigger('change');
+  $('#Reporte_clasif').val('').trigger('change');
   $("#resultados").html(''); 
 
 }

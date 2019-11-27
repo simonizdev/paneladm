@@ -4,513 +4,120 @@
 
 class UtilidadesReportes {
   
-  public static function estequipospantalla($empresa_compra, $tipo_equipo) {
+  public static function licdisppantalla($empresa_compra, $clasif) {
     
     //se arma el arreglo con los datos para el reporte
 
-    //Condición de empresa
+    $condicion = "";
 
     if($empresa_compra != ""){
-      //una o varias empresas
-      
       $a_emp = $empresa_compra;
-      $qe = "SELECT * FROM TH_EMPRESA WHERE Estado = 1 AND Id_Empresa IN (".$a_emp.") ORDER BY Descripcion";
+      $condicion .= " AND L.Empresa_Compra IN (".$a_emp.")";
+    }
+
+    if($clasif != ""){
+      $condicion .= " AND L.Clasificacion = ".$clasif;
+    }
+
+    $query = "
+      SELECT 
+      L.Id_Lic,
+      E.Descripcion AS Empresa_Compra,
+      C.Dominio AS Clasif, 
+      T.Dominio AS Tipo, 
+      V.Dominio AS Vers, 
+      P.Dominio AS Prod, 
+      L.Num_Licencia,
+      L.Cant_Usuarios AS Usu_x_Lic,
+      (L.Cant_Usuarios - (SELECT COUNT(*) FROM TH_LICENCIA_EQUIPO WHERE Id_Licencia = L.Id_Lic AND Estado = 1)) AS Usu_x_Lic_Disp,
+      U.Dominio AS Ubic,
+      L.Numero_Factura
+      FROM TH_LICENCIA L
+      LEFT JOIN TH_EMPRESA E ON L.Empresa_Compra = E.Id_Empresa 
+      LEFT JOIN TH_DOMINIO C ON L.Clasificacion = C.Id_Dominio
+      LEFT JOIN TH_DOMINIO T ON L.Tipo = T.Id_Dominio 
+      LEFT JOIN TH_DOMINIO V ON L.Version = V.Id_Dominio 
+      LEFT JOIN TH_DOMINIO P ON L.Producto = P.Id_Dominio
+      LEFT JOIN TH_DOMINIO U ON L.Ubicacion = U.Id_Dominio
+      WHERE (L.Cant_Usuarios - (SELECT COUNT(*) FROM TH_LICENCIA_EQUIPO WHERE Id_Licencia = L.Id_Lic AND Estado = 1)) != 0
+      AND L.Estado = ".Yii::app()->params->estado_lic_act." ".$condicion."
+      ORDER BY 2,3,4,5,6
+    ";
+
+    $tabla = '
+    <table class="table table-striped table-hover" style="font-size: 12px !important;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Empresa que compro</th>
+          <th>Clasif.</th>
+          <th>Tipo</th>
+          <th>Versión</th>
+          <th>Producto</th>
+          <th>N° de licencia</th>
+          <th>Usuarios x lic.</th>
+          <th>Usuarios x lic. disp.</th>
+          <th>Ubicación</th>
+          <th>N° de factura</th>
+        </tr>
+      </thead>
+      <tbody>
+    ';
+
+    $q_lic = Yii::app()->db->createCommand($query)->queryAll();
+
+    if(!empty($q_lic)){
+
+      $i = 0;
+
+      foreach ($q_lic as $reg1) {
+
+        $Id_Lic         = $reg1 ['Id_Lic']; 
+        $Empresa_Compra = $reg1 ['Empresa_Compra']; 
+        $Clasif         = $reg1 ['Clasif'];
+        $Tipo           = $reg1 ['Tipo'];
+        $Vers           = $reg1 ['Vers'];
+        
+        if($reg1 ['Prod'] != ""){
+          $Prod   = $reg1 ['Prod'];
+        }else{
+          $Prod   = '-';
+        }
+        
+        $Num_Licencia   = $reg1 ['Num_Licencia'];
+        $Usu_x_Lic      = $reg1 ['Usu_x_Lic'];
+        $Usu_x_Lic_Disp = $reg1 ['Usu_x_Lic_Disp'];
+        $Ubic           = $reg1 ['Ubic'];
+        $Numero_Factura = $reg1 ['Numero_Factura'];
+
+        if ($i % 2 == 0){
+          $clase = 'odd'; 
+        }else{
+          $clase = 'even'; 
+        }
+
+        $tabla .= '    
+        <tr class="'.$clase.'">
+              <td>'.$Id_Lic.'</td>
+              <td>'.$Empresa_Compra.'</td>
+              <td>'.$Clasif.'</td>
+              <td>'.$Tipo.'</td>
+              <td>'.$Vers.'</td>
+              <td>'.$Prod.'</td>
+              <td>'.$Num_Licencia.'</td>
+              <td>'.$Usu_x_Lic.'</td>
+              <td>'.$Usu_x_Lic_Disp.'</td>
+              <td>'.$Ubic.'</td>
+              <td>'.$Numero_Factura.'</td>
+          </tr>';
+
+        $i++; 
+
+      }
 
     }else{
-      //todas las empresas
-      $qe = "SELECT * FROM TH_EMPRESA WHERE Estado = 1 ORDER BY Descripcion";
-    }
 
-    $array_equipos_empresa = array();
-
-    $q_empresas = Yii::app()->db->createCommand($qe)->queryAll();
-
-    foreach ($q_empresas as $empresas) {
-
-      $id_emp = $empresas['Id_Empresa'];
-      $desc_emp = $empresas['Descripcion'];
-
-      if($tipo_equipo != ""){
-        $q_equipos_x_empresa = Yii::app()->db->createCommand("SELECT COUNT(*) AS Num_Equipos FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo IN (".$tipo_equipo.") AND Empresa_Compra = ".$id_emp)->queryRow();
-      }else{
-        $q_equipos_x_empresa = Yii::app()->db->createCommand("SELECT COUNT(*) AS Num_Equipos FROM TH_EQUIPO WHERE Estado = 1 AND Empresa_Compra = ".$id_emp)->queryRow(); 
-      }
-
-      //EQUIPOS POR EMPRESA
-      $num_equipo_x_empresa = $q_equipos_x_empresa['Num_Equipos'];
-
-      if($num_equipo_x_empresa != "" && $num_equipo_x_empresa > 0){
-        
-        $array_equipos_empresa[$id_emp]['desc_empresa'] = $desc_emp;
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_empresa'] = $q_equipos_x_empresa['Num_Equipos'];
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_tipo'] = array();
-
-        //EQUIPOS POR EMPRESA / TIPO EQUIPO
-        
-        if($tipo_equipo != ""){
-          //uno o varios tipos de equipo
-          $a_tipos = $tipo_equipo;
-          $qte = "SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->tipo_equipo." AND Estado = 1 AND Id_Dominio IN (".$a_tipos.") ORDER BY Dominio";
-
-        }else{
-          //todos los tipos de equipo
-          $qte = "SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->tipo_equipo." AND Estado = 1 ORDER BY Dominio";
-        }
-
-
-        $q_tipos_equipo = Yii::app()->db->createCommand($qte)->queryAll();
-
-        foreach ($q_tipos_equipo as $tipos) {
-
-          $id_tipo = $tipos['Id_Dominio'];
-          $desc_tipo_equipo = $tipos['Dominio'];
-
-          $q_equipos_x_empresa_x_tipo = Yii::app()->db->createCommand("SELECT COUNT(*) AS Num_Equipos FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo = ".$id_tipo." AND Empresa_Compra = ".$id_emp)->queryRow();
-
-          $num_equipo_x_empresa_x_tipo = $q_equipos_x_empresa_x_tipo['Num_Equipos'];
-
-          if($num_equipo_x_empresa_x_tipo != "" && $num_equipo_x_empresa_x_tipo > 0){  
-            $tipo_inc = array('desc_tipo_equipo' => $desc_tipo_equipo, 'cant' => $num_equipo_x_empresa_x_tipo);
-            array_push($array_equipos_empresa[$id_emp]['cant_equipos_x_tipo'], $tipo_inc);
-          }
-        }
-
-        //EQUIPOS POR EMPRESA / TIPO DE LICENCIA S.O
-
-        $q_tipos_licencia_so = Yii::app()->db->createCommand("SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->tipo_licencia." AND Estado = 1")->queryAll();
-
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_tipo_licencia_so'] = array();
-
-        foreach ($q_tipos_licencia_so as $tipos_lic_so) {
-        
-          $id_tipo_licencia_so = $tipos_lic_so['Id_Dominio'];
-          $desc_tipo_licencia_so = $tipos_lic_so['Dominio'];
-
-          if($tipo_equipo != ""){
-            $q_equipos_x_empresa_x_tipo_licencia_so = Yii::app()->db->createCommand("SELECT COUNT (DISTINCT Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_SO WHERE Estado = 1 AND Tipo_Licencia = ".$id_tipo_licencia_so." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo IN (".$tipo_equipo.") AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }else{
-            $q_equipos_x_empresa_x_tipo_licencia_so = Yii::app()->db->createCommand("SELECT COUNT (DISTINCT Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_SO WHERE Estado = 1 AND Tipo_Licencia = ".$id_tipo_licencia_so." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }
-
-          $num_equipo_x_empresa_x_tipo_licencia_so = $q_equipos_x_empresa_x_tipo_licencia_so['Num_Equipos'];
-
-          if($num_equipo_x_empresa_x_tipo_licencia_so != "" && $num_equipo_x_empresa_x_tipo_licencia_so > 0){ 
-            
-            $tipo_licencia_so = array('desc_tipo_licencia_so' => $desc_tipo_licencia_so, 'cant' => $num_equipo_x_empresa_x_tipo_licencia_so);
-            array_push($array_equipos_empresa[$id_emp]['cant_equipos_x_tipo_licencia_so'], $tipo_licencia_so);
-
-          }
-
-        }
-
-        //EQUIPOS POR EMPRESA / VERSIÓN S.O
-
-        $q_versiones_so = Yii::app()->db->createCommand("SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->version_so." AND Estado = 1")->queryAll();
-
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_version_so'] = array();
-
-        foreach ($q_versiones_so as $versiones_so) {
-        
-          $id_version_so = $versiones_so['Id_Dominio'];
-          $desc_version_so = $versiones_so['Dominio'];
-
-          if($tipo_equipo != ""){
-            $q_equipos_x_empresa_x_version_so = Yii::app()->db->createCommand("SELECT COUNT (DISTINCT Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_SO WHERE Estado = 1 AND Version = ".$id_version_so." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo IN (".$tipo_equipo.") AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }else{
-            $q_equipos_x_empresa_x_version_so = Yii::app()->db->createCommand("SELECT COUNT (DISTINCT Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_SO WHERE Estado = 1 AND Version = ".$id_version_so." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }
-
-          $num_equipo_x_empresa_x_version_so = $q_equipos_x_empresa_x_version_so['Num_Equipos'];
-
-          if($num_equipo_x_empresa_x_version_so != "" && $num_equipo_x_empresa_x_version_so > 0){ 
-            
-            $tipo_version_so = array('desc_version_so' => $desc_version_so, 'cant' => $num_equipo_x_empresa_x_version_so);
-            array_push($array_equipos_empresa[$id_emp]['cant_equipos_x_version_so'], $tipo_version_so);
-
-          }
-
-        }
-
-        //EQUIPOS POR EMPRESA / TIPO DE LICENCIA OFFICE
-
-        $q_tipos_licencia_office = Yii::app()->db->createCommand("SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->tipo_licencia." AND Estado = 1")->queryAll();
-
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_tipo_licencia_office'] = array();
-
-        foreach ($q_tipos_licencia_office as $tipos_lic_office) {
-        
-          $id_tipo_licencia_office = $tipos_lic_office['Id_Dominio'];
-          $desc_tipo_licencia_office = $tipos_lic_office['Dominio'];
-
-          if($tipo_equipo != ""){
-            $q_equipos_x_empresa_x_tipo_licencia_office = Yii::app()->db->createCommand("SELECT COUNT (Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_OFFICE WHERE Estado = 1 AND Tipo_Licencia = ".$id_tipo_licencia_office." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo IN (".$tipo_equipo.") AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }else{
-            $q_equipos_x_empresa_x_tipo_licencia_office = Yii::app()->db->createCommand("SELECT COUNT (Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_OFFICE WHERE Estado = 1 AND Tipo_Licencia = ".$id_tipo_licencia_office." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }
-
-          $num_equipo_x_empresa_x_tipo_licencia_office = $q_equipos_x_empresa_x_tipo_licencia_office['Num_Equipos'];
-
-          if($num_equipo_x_empresa_x_tipo_licencia_office != "" && $num_equipo_x_empresa_x_tipo_licencia_office > 0){ 
-            
-            $tipo_licencia_office = array('desc_tipo_licencia_office' => $desc_tipo_licencia_office, 'cant' => $num_equipo_x_empresa_x_tipo_licencia_office);
-            array_push($array_equipos_empresa[$id_emp]['cant_equipos_x_tipo_licencia_office'], $tipo_licencia_office);
-
-          }
-
-        }
-
-        //EQUIPOS POR EMPRESA / VERSIÓN OFFICE
-
-        $q_versiones_office = Yii::app()->db->createCommand("SELECT * FROM TH_DOMINIO WHERE Id_Padre = ".Yii::app()->params->version_office." AND Estado = 1")->queryAll();
-
-        $array_equipos_empresa[$id_emp]['cant_equipos_x_version_office'] = array();
-
-        foreach ($q_versiones_office as $versiones_office) {
-        
-          $id_version_office = $versiones_office['Id_Dominio'];
-          $desc_version_office = $versiones_office['Dominio'];
-
-          if($tipo_equipo != ""){
-            $q_equipos_x_empresa_x_version_so = Yii::app()->db->createCommand("SELECT COUNT (Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_OFFICE WHERE Estado = 1 AND Version = ".$id_version_office." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Tipo_Equipo IN (".$tipo_equipo.") AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }else{
-            $q_equipos_x_empresa_x_version_so = Yii::app()->db->createCommand("SELECT COUNT (Id_Equipo) AS Num_Equipos FROM TH_EQUIPO_OFFICE WHERE Estado = 1 AND Version = ".$id_version_office." AND Id_Equipo IN (SELECT Id_Equipo FROM TH_EQUIPO WHERE Estado = 1 AND Empresa_Compra = ".$id_emp.")")->queryRow();
-          }
-
-          $num_equipo_x_empresa_x_version_office = $q_equipos_x_empresa_x_version_so['Num_Equipos'];
-
-          if($num_equipo_x_empresa_x_version_office != "" && $num_equipo_x_empresa_x_version_office > 0){ 
-            
-            $tipo_version_office = array('desc_version_office' => $desc_version_office, 'cant' => $num_equipo_x_empresa_x_version_office);
-            array_push($array_equipos_empresa[$id_emp]['cant_equipos_x_version_office'], $tipo_version_office);
-
-          }
-        }
-      }
-    }
-
-    $tabla = '';
-
-    if(!empty($array_equipos_empresa)){
-
-      foreach ($array_equipos_empresa as $array_empresa) {
-
-        $i=0;
-
-        if ($i % 2 == 0){
-          $clase = 'odd'; 
-        }else{
-          $clase = 'even'; 
-        }
-        
-        $tabla .= '
-        <table class="table table-striped table-hover" style="font-size: 12px !important;">
-          <thead>
-            <tr>
-              <th colspan="2" style="font-weight: bold;font-size: 16px !important;">'.$array_empresa['desc_empresa'].'</th>
-            </tr>
-          </thead>
-          <tbody>
-        ';
-
-        $i++;
-
-        if ($i % 2 == 0){
-          $clase = 'odd'; 
-        }else{
-          $clase = 'even'; 
-        }
-
-        $tabla .= '
-          <tr class="'.$clase.'">
-            <td>EQUIPOS ACTIVOS</td><td>'.$array_empresa['cant_equipos_x_empresa'].'</td>
-          </tr>
-        ';
-
-        $i++;
-
-        //TIPOS DE EQUIPO
-        if(array_key_exists('cant_equipos_x_tipo', $array_empresa)){
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td colspan="2" style="font-weight: bold;">TIPO DE EQUIPO</td>
-            </tr>
-          ';
-
-          $i++;
-
-          $equipos_x_tipo = $array_empresa['cant_equipos_x_tipo'];
-
-          $tet = 0;
-
-          foreach ($equipos_x_tipo as $tipo_equipo) {
-
-            if ($i % 2 == 0){
-              $clase = 'odd'; 
-            }else{
-              $clase = 'even'; 
-            }
-
-            $tabla .= '
-              <tr class="'.$clase.'">
-                <td>'.$tipo_equipo['desc_tipo_equipo'].'</td><td>'.$tipo_equipo['cant'].'</td>
-              </tr>
-            ';
-
-            $i++;
-            $tet = $tet + $tipo_equipo['cant'];
-
-          }
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td></td><td style="font-weight: bold;">'.$tet.'</td>
-            </tr>
-          ';
-
-          $i++;
-
-        }
-
-        //TIPOS DE LICENCIA S.O
-        if(array_key_exists('cant_equipos_x_tipo_licencia_so', $array_empresa)){
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td colspan="2" style="font-weight: bold;">TIPO DE LICENCIA S.O</td>
-            </tr>
-          ';
-
-          $i++;
-
-          $equipos_x_tipo_licencia_so = $array_empresa['cant_equipos_x_tipo_licencia_so'];
-
-          $tetlso = 0;
-
-          foreach ($equipos_x_tipo_licencia_so as $tipo_licencia_so) {
-
-            if ($i % 2 == 0){
-              $clase = 'odd'; 
-            }else{
-              $clase = 'even'; 
-            }
-
-            $tabla .= '
-              <tr class="'.$clase.'">
-                <td>'.$tipo_licencia_so['desc_tipo_licencia_so'].'</td><td>'.$tipo_licencia_so['cant'].'</td>
-              </tr>
-            ';
-
-            $i++;
-            $tetlso = $tetlso + $tipo_licencia_so['cant'];
-
-          }
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td></td><td style="font-weight: bold;">'.$tetlso.'</td>
-            </tr>
-          ';
-
-          $i++;
-
-        }
-
-        //VERSIONES S.O
-        if(array_key_exists('cant_equipos_x_version_so', $array_empresa)){
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td colspan="2" style="font-weight: bold;">VERSIÓN S.O</td>
-            </tr>
-          ';
-
-          $i++;
-
-          $equipos_x_version_so = $array_empresa['cant_equipos_x_version_so'];
-
-          $tevso = 0;
-
-          foreach ($equipos_x_version_so as $version_so) {
-
-            if ($i % 2 == 0){
-              $clase = 'odd'; 
-            }else{
-              $clase = 'even'; 
-            }
-
-            $tabla .= '
-              <tr class="'.$clase.'">
-                <td>'.$version_so['desc_version_so'].'</td><td>'.$version_so['cant'].'</td>
-              </tr>
-            ';
-
-            $i++;
-            $tevso = $tevso + $version_so['cant'];
-
-          }
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td></td><td style="font-weight: bold;">'.$tevso.'</td>
-            </tr>
-          ';
-
-          $i++;
-
-        }
-
-        //TIPOS DE LICENCIA OFFICE
-        if(array_key_exists('cant_equipos_x_tipo_licencia_office', $array_empresa)){
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td colspan="2" style="font-weight: bold;">TIPO DE LICENCIA OFFICE</td>
-            </tr>
-          ';
-
-          $i++;
-
-          $equipos_x_tipo_licencia_office = $array_empresa['cant_equipos_x_tipo_licencia_office'];
-
-          $tetlo = 0;
-
-          foreach ($equipos_x_tipo_licencia_office as $tipo_licencia_office) {
-
-            if ($i % 2 == 0){
-              $clase = 'odd'; 
-            }else{
-              $clase = 'even'; 
-            }
-
-            $tabla .= '
-              <tr class="'.$clase.'">
-                <td>'.$tipo_licencia_office['desc_tipo_licencia_office'].'</td><td>'.$tipo_licencia_office['cant'].'</td>
-              </tr>
-            ';
-
-            $i++;
-            $tetlo = $tetlo + $tipo_licencia_office['cant'];
-
-          }
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td></td><td style="font-weight: bold;">'.$tetlo.'</td>
-            </tr>
-          ';
-
-          $i++;
-
-        }
-
-        //VERSIONES OFFICE
-        if(array_key_exists('cant_equipos_x_version_office', $array_empresa)){
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td colspan="2" style="font-weight: bold;">VERSIÓN OFFICE</td>
-            </tr>
-          ';
-
-          $i++;
-
-          $tevo = 0;
-
-          $equipos_x_version_office = $array_empresa['cant_equipos_x_version_office'];
-
-          foreach ($equipos_x_version_office as $version_office) {
-
-            if ($i % 2 == 0){
-              $clase = 'odd'; 
-            }else{
-              $clase = 'even'; 
-            }
-
-            $tabla .= '
-              <tr class="'.$clase.'">
-                <td>'.$version_office['desc_version_office'].'</td><td>'.$version_office['cant'].'</td>
-              </tr>
-            ';
-
-            $i++;
-            $tevo = $tevo + $version_office['cant'];
-
-          }
-
-          if ($i % 2 == 0){
-            $clase = 'odd'; 
-          }else{
-            $clase = 'even'; 
-          }
-
-          $tabla .= '
-            <tr class="'.$clase.'">
-              <td></td><td style="font-weight: bold;">'.$tevo.'</td>
-            </tr>
-          ';
-
-          $tabla .= '<br>';
-
-        }
-      }
-
-      $tabla .= '  </tbody>
-        </table>';
+      $tabla .= ' <tr><td colspan="11" class="empty"><span class="empty">No se encontraron resultados.</span></td></tr>';
 
     }
 
