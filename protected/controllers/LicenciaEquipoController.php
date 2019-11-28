@@ -79,8 +79,34 @@ class LicenciaEquipoController extends Controller
 			
 			if($model->save()){
 
-				$model_licencia = New Licencia;
-        		$desc_licencia = $model_licencia->DescLicencia($model->Id_Licencia);
+				$model_licencia = Licencia::model()->findByPk($model->Id_Licencia);
+				$desc_licencia = $model_licencia->DescLicencia($model->Id_Licencia);  
+
+				if($model_licencia->Clasificacion == Yii::app()->params->clase_licencia_so && $model_licencia->Tipo == Yii::app()->params->tipo_licencia_oem){
+            					
+					$criteria=new CDbCriteria;
+					$criteria->join = 'LEFT JOIN TH_LICENCIA l ON t.Id_Licencia = l.Id_Lic';
+					$criteria->condition = "t.Id_Lic_Equ != ".$model->Id_Lic_Equ." AND t.Estado = 1 AND l.Clasificacion = ".Yii::app()->params->clase_licencia_so." AND l.Tipo = ".Yii::app()->params->tipo_licencia_oem." AND t.Id_Equipo = ".$e;
+					$licencias_inact = LicenciaEquipo::model()->findAll($criteria);
+
+					if(!empty($licencias_inact)){
+						foreach ($licencias_inact as $reg) {
+							$reg->Estado = 0;
+							$reg->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+							$reg->Fecha_Actualizacion = date('Y-m-d H:i:s');
+							$reg->save();
+
+							$l_i = Licencia::model()->findByPk($reg->Id_Licencia);
+							$l_i->Estado = Yii::app()->params->estado_lic_ina;
+        					$l_i->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+							$l_i->Fecha_Actualizacion = date('Y-m-d H:i:s');
+							$l_i->save();
+
+						}
+
+					}		
+				
+				}
 
 				Yii::app()->user->setFlash('success', "Se vinculo la licencia ".$desc_licencia." correctamente.");
 				$this->redirect(array('equipo/view','id'=>$e));
@@ -115,6 +141,34 @@ class LicenciaEquipoController extends Controller
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
 			
 			if($model->save()){
+
+				$model_licencia = Licencia::model()->findByPk($l);
+
+				if($model_licencia->Clasificacion == Yii::app()->params->clase_licencia_so && $model_licencia->Tipo == Yii::app()->params->tipo_licencia_oem){
+            					
+					$criteria=new CDbCriteria;
+					$criteria->join = 'LEFT JOIN TH_LICENCIA l ON t.Id_Licencia = l.Id_Lic';
+					$criteria->condition = "t.Id_Lic_Equ != ".$model->Id_Lic_Equ." AND t.Estado = 1 AND l.Clasificacion = ".Yii::app()->params->clase_licencia_so." AND l.Tipo = ".Yii::app()->params->tipo_licencia_oem." AND t.Id_Equipo = ".$model->Id_Equipo;
+					$licencias_inact = LicenciaEquipo::model()->findAll($criteria);
+
+					if(!empty($licencias_inact)){
+						foreach ($licencias_inact as $reg) {
+							$reg->Estado = 0;
+							$reg->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+							$reg->Fecha_Actualizacion = date('Y-m-d H:i:s');
+							$reg->save();
+
+							$l_i = Licencia::model()->findByPk($reg->Id_Licencia);
+							$l_i->Estado = Yii::app()->params->estado_lic_ina;
+        					$l_i->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+							$l_i->Fecha_Actualizacion = date('Y-m-d H:i:s');
+							$l_i->save();
+
+						}
+
+					}		
+				
+				}
 
         		$desc_equipo = UtilidadesVarias::descequipo($model->Id_Equipo);
 
