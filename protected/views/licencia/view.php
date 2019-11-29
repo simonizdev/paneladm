@@ -349,7 +349,7 @@
                                 'imageUrl'=>false,
                                 'url'=>'Yii::app()->createUrl("licenciaEquipo/inact", array("id"=>$data->Id_Lic_Equ, "opc"=>1))',
                                 'visible'=> '(Yii::app()->user->getState("permiso_act") == true && $data->Estado == 1)',
-                                'options'=>array('title'=>' Desvincular empleado', 'confirm'=>'Esta seguro de desvincular el equipo de esta licencia ?'),
+                                'options'=>array('title'=>' Desvincular equipo', 'confirm'=>'Esta seguro de desvincular el equipo de esta licencia ?'),
                             ),
                         )
                     ),
