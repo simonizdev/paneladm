@@ -27,12 +27,13 @@
   $objPHPExcel->setActiveSheetIndex()->setCellValue('F1', 'N° de licencia');
   $objPHPExcel->setActiveSheetIndex()->setCellValue('G1', 'Usuarios x lic.');
   $objPHPExcel->setActiveSheetIndex()->setCellValue('H1', 'Usuarios x lic. disp.');
-  $objPHPExcel->setActiveSheetIndex()->setCellValue('I1', 'Ubicación');
-  $objPHPExcel->setActiveSheetIndex()->setCellValue('J1', 'N° de factura');
-  $objPHPExcel->setActiveSheetIndex()->setCellValue('K1', 'Estado');
+  $objPHPExcel->setActiveSheetIndex()->setCellValue('I1', 'Empresa que compro');
+  $objPHPExcel->setActiveSheetIndex()->setCellValue('J1', 'Ubicación');
+  $objPHPExcel->setActiveSheetIndex()->setCellValue('K1', 'N° de factura');
+  $objPHPExcel->setActiveSheetIndex()->setCellValue('L1', 'Estado');
 
-  $objPHPExcel->getActiveSheet()->getStyle('A1:K1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
-  $objPHPExcel->getActiveSheet()->getStyle('A1:K1')->getFont()->setBold(true);
+  $objPHPExcel->getActiveSheet()->getStyle('A1:L1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+  $objPHPExcel->getActiveSheet()->getStyle('A1:L1')->getFont()->setBold(true);
 
   $Prom = "";
   $Fila= 3;
@@ -49,11 +50,12 @@
     $objPHPExcel->setActiveSheetIndex()->setCellValue('F'.$Fila,($reg->Num_Licencia == "") ? "-" : $reg->Num_Licencia);
     $objPHPExcel->setActiveSheetIndex()->setCellValue('G'.$Fila,$reg->Cant_Usuarios);
     $objPHPExcel->setActiveSheetIndex()->setCellValue('H'.$Fila,$reg->CantUsuariosRest($reg->Id_Lic));
-    $objPHPExcel->setActiveSheetIndex()->setCellValue('I'.$Fila,($reg->Ubicacion == "") ? "-" : $reg->ubicacion->Dominio);
-    $objPHPExcel->setActiveSheetIndex()->setCellValue('J'.$Fila,$reg->Numero_Factura);
-    $objPHPExcel->setActiveSheetIndex()->setCellValue('K'.$Fila,($reg->Estado == "") ? "-" : $reg->estado->Dominio);
+    $objPHPExcel->setActiveSheetIndex()->setCellValue('I'.$Fila,($reg->Empresa_Compra == "") ? "-" : $reg->empresacompra->Descripcion);
+    $objPHPExcel->setActiveSheetIndex()->setCellValue('J'.$Fila,($reg->Ubicacion == "") ? "-" : $reg->ubicacion->Dominio);
+    $objPHPExcel->setActiveSheetIndex()->setCellValue('K'.$Fila,$reg->Numero_Factura);
+    $objPHPExcel->setActiveSheetIndex()->setCellValue('L'.$Fila,($reg->Estado == "") ? "-" : $reg->estado->Dominio);
 
-    $objPHPExcel->getActiveSheet()->getStyle('A'.$Fila.':K'.$Fila)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
+    $objPHPExcel->getActiveSheet()->getStyle('A'.$Fila.':L'.$Fila)->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 
     $Fila ++;
          

@@ -100,10 +100,22 @@
 	    </div>
 	    <div class="col-sm-3">
 	    	<div class="form-group">
-	          	<?php echo $form->label($model,'Cant_Usuarios'); ?>
-			    <?php echo $form->numberField($model,'Cant_Usuarios', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
+	            <?php echo $form->label($model,'Empresa_Compra'); ?>
+	            <?php
+	                $this->widget('ext.select2.ESelect2',array(
+	                    'name'=>'Licencia[Empresa_Compra]',
+	                    'id'=>'Licencia_Empresa_Compra',
+	                    'data'=>$lista_empresas,
+	                    'htmlOptions'=>array(),
+	                    'options'=>array(
+	                        'placeholder'=>'Seleccione...',
+	                        'width'=> '100%',
+	                        'allowClear'=>true,
+	                    ),
+	                ));
+	            ?>
 	        </div>
-	   	</div>	
+	    </div>	
 	   	<div class="col-sm-3">
 	    	<div class="form-group">
 	            <?php echo $form->label($model,'Ubicacion'); ?>
@@ -152,7 +164,7 @@
 	    	<div class="form-group">
 	          	<?php echo $form->label($model,'orderby'); ?>
 			    <?php 
-                	$array_orden = array(1 => 'ID ASC', 2 => 'ID DESC', 3 => 'Clasif. ASC', 4 => 'Clasif. DESC', 5 => 'Tipo ASC', 6 => 'Tipo DESC', 7 => 'Versión ASC', 8 => 'Versión DESC' , 9 => 'Producto ASC', 10 => 'Producto DESC', 11 => 'N° de licencia ASC', 12 => 'N° de licencia DESC', 13 => 'Usuarios x lic. ASC', 14 => 'Usuarios x lic. DESC', 15 => 'Ubicación ASC', 16 => 'Ubicación DESC', 17 => 'Estado ASC', 18 => 'Estado DESC',
+                	$array_orden = array(1 => 'ID ASC', 2 => 'ID DESC', 3 => 'Clasif. ASC', 4 => 'Clasif. DESC', 5 => 'Tipo ASC', 6 => 'Tipo DESC', 7 => 'Versión ASC', 8 => 'Versión DESC' , 9 => 'Producto ASC', 10 => 'Producto DESC', 11 => 'N° de licencia ASC', 12 => 'N° de licencia DESC', 13 => 'Empresa que compro ASC', 14 => 'Empresa que compro DESC', 15 => 'Ubicación ASC', 16 => 'Ubicación DESC', 17 => 'Estado ASC', 18 => 'Estado DESC',
                 	);
             	?>
             	<?php
@@ -200,7 +212,7 @@
 		$('#Licencia_Version').val('').trigger('change');
 		$('#Licencia_Producto').val('').trigger('change');
 		$('#Licencia_Num_Licencia').val('');
-		$('#Licencia_Cant_Usuarios').val('');
+		$('#Licencia_Empresa_Compra').val('').trigger('change');
 		$('#Licencia_Ubicacion').val('').trigger('change');
 		$('#Licencia_Estado').val('').trigger('change');
 		$('#Licencia_orderby').val('').trigger('change');

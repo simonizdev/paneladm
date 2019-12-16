@@ -328,6 +328,8 @@ class LicenciaController extends Controller
 
 		$ubicaciones=Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Id_Padre = '.Yii::app()->params->ubicacion_licencia));
 
+		$empresas=Empresa::model()->findAll(array('order'=>'Descripcion', 'condition'=>'Tipo = '.Yii::app()->params->empresa_nac));
+
 		$estados=Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Id_Padre = '.Yii::app()->params->estado_licencia));
 
 		$model->unsetAttributes();  // clear any default values
@@ -341,6 +343,7 @@ class LicenciaController extends Controller
 			'versiones'=>$versiones,
 			'productos'=>$productos,
 			'ubicaciones'=>$ubicaciones,
+			'empresas'=>$empresas,
 			'estados'=>$estados,
 		));
 	}

@@ -43,6 +43,9 @@ $lista_productos = CHtml::listData($productos, 'Id_Dominio', 'Dominio');
 //para combos de ubicaciones
 $lista_ubicaciones = CHtml::listData($ubicaciones, 'Id_Dominio', 'Dominio');
 
+//para combos de empresas
+$lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
+
 //para combos de estados
 $lista_estados = CHtml::listData($estados, 'Id_Dominio', 'Dominio');
 
@@ -80,6 +83,7 @@ $lista_estados = CHtml::listData($estados, 'Id_Dominio', 'Dominio');
 	'lista_versiones'=>$lista_versiones,
     'lista_productos'=>$lista_productos,
     'lista_ubicaciones'=>$lista_ubicaciones,
+    'lista_empresas'=>$lista_empresas,
     'lista_estados'=>$lista_estados,
 )); ?>
 </div><!-- search-form -->
@@ -116,6 +120,10 @@ $lista_estados = CHtml::listData($estados, 'Id_Dominio', 'Dominio');
         array(
             'name' => 'cant_usuarios_disp',
             'value' => '$data->CantUsuariosRest($data->Id_Lic)',
+        ),
+        array(
+            'name' => 'Empresa_Compra',
+            'value' => '($data->Empresa_Compra == "") ? "-" : $data->empresacompra->Descripcion',
         ),
         array(
             'name' => 'Ubicacion',

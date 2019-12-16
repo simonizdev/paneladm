@@ -195,7 +195,7 @@ class Licencia extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 		$criteria->together  =  true;
-		$criteria->with=array('clasificacion', 'tipo', 'version', 'producto', 'ubicacion', 'estado');
+		$criteria->with=array('clasificacion', 'tipo', 'version', 'producto', 'ubicacion', 'estado', 'empresacompra');
 
 		if($this->Clasificacion != ""){
 			$criteria->AddCondition("t.Clasificacion = '".$this->Clasificacion."'"); 
@@ -217,13 +217,16 @@ class Licencia extends CActiveRecord
 			$criteria->AddCondition("t.Ubicacion = '".$this->Ubicacion."'"); 
 	    }
 
+	    if($this->Empresa_Compra != ""){
+			$criteria->AddCondition("t.Empresa_Compra = '".$this->Empresa_Compra."'"); 
+	    }
+
 	    if($this->Estado != ""){
 			$criteria->AddCondition("t.Estado = '".$this->Estado."'"); 
 	    }
 
 		$criteria->compare('t.Id_Lic',$this->Id_Lic);
 		$criteria->compare('t.Num_Licencia',$this->Num_Licencia,true);
-		$criteria->compare('t.Cant_Usuarios',$this->Cant_Usuarios);
 		$criteria->compare('t.Numero_Factura',$this->Numero_Factura,true);
 
 		if(empty($this->orderby)){
@@ -267,10 +270,10 @@ class Licencia extends CActiveRecord
 			        $criteria->order = 't.Num_Licencia DESC'; 
 			        break;
 			   	case 13:
-			        $criteria->order = 't.Cant_Usuarios ASC'; 
+			        $criteria->order = 'empresacompra.Descripcion ASC'; 
 			        break;
 			    case 14:
-			        $criteria->order = 't.Cant_Usuarios DESC'; 
+			        $criteria->order = 'empresacompra.Descripcion DESC'; 
 			        break;
 			    case 15:
 			        $criteria->order = 'ubicacion.Dominio ASC'; 
