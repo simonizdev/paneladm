@@ -175,7 +175,48 @@ class ReporteController extends Controller
 		    	$id_clase = $cl['Id_Dominio'];
 		    	$clase = $cl['Dominio'];
 
-	    		$sop_lic = Yii::app()->db->createCommand("
+		    	if($opc == 1){
+		  			//individual
+
+		  			$query = "SELECT 
+	    			L.Id_Licencia,
+	    			L.Doc_Soporte,
+	    			L.Doc_Soporte2
+	    			FROM TH_LICENCIA_EQUIPO LE
+					LEFT JOIN TH_LICENCIA L ON LE.Id_Licencia = L.Id_Lic
+	    			WHERE L.Clasificacion = ".$id_clase." AND L.Estado = 1 AND LE.Estado = 1 AND LE.Id_Equipo = ".$Id_Equipo."";
+
+	    		}
+
+	    		if($opc == 2){	
+				  //grupal
+
+	    		  $query = "SELECT 
+    			  L.Id_Licencia,
+    			  L.Doc_Soporte,
+    		 	  L.Doc_Soporte2
+    			  FROM TH_LICENCIA_EQUIPO LE
+				  LEFT JOIN TH_LICENCIA L ON LE.Id_Licencia = L.Id_Lic
+    			  WHERE L.Clasificacion = ".$id_clase." AND L.Estado = 1 AND LE.Estado = 1 AND LE.Id_Equipo = ".$Id_Equipo."";
+
+				  
+				  if($fecha_compra_inicial != "" && $fecha_compra_final != ""){
+				    $query .= " AND L.Fecha_Factura BETWEEN '".$fecha_compra_inicial."' AND '".$fecha_compra_final."'";  
+				  }else{
+				    if($fecha_compra_inicial != "" && $fecha_compra_final == ""){
+		      		$query .= " AND L.Fecha_Factura = '".$fecha_compra_inicial."'";  
+				    } 
+				  }
+
+				  if($empresa_compra != ""){
+						$query .= " AND L.Empresa_Compra = ".$empresa_compra;  
+				  }
+
+				}
+
+				$sop_lic = Yii::app()->db->createCommand($query)->queryAll();
+
+	    		/*$sop_lic = Yii::app()->db->createCommand("
 	    			SELECT 
 	    			L.Id_Licencia,
 	    			L.Doc_Soporte,
@@ -183,7 +224,7 @@ class ReporteController extends Controller
 	    			FROM TH_LICENCIA_EQUIPO LE
 						LEFT JOIN TH_LICENCIA L ON LE.Id_Licencia = L.Id_Lic
 	    			WHERE L.Clasificacion = ".$id_clase." AND L.Estado = 1 AND LE.Estado = 1 AND LE.Id_Equipo = ".$Id_Equipo."
-	    		")->queryAll();
+	    		")->queryAll();*/
 
 	    		if(!empty($sop_lic)){
 	    			foreach ($sop_lic as $licen) {
