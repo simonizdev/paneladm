@@ -176,6 +176,31 @@ class UtilidadesVarias {
 			}
 
 		}
+
+		if($opc == 6){
+
+			$modelocon = Cont::model()->findByPk($id);
+
+			if($modelocon->Estado == 0){
+
+				return "label-default";
+
+			}else{
+
+				$str = strtotime($modelocon->Fecha_Ren_Can) - strtotime(date('Y-m-d'));
+				$diff = floor($str/3600/24);
+
+				if ($diff < $modelocon->Dias_Alerta){
+					return "label-danger";
+				}
+
+				if ($diff >= $modelocon->Dias_Alerta){
+					return "label-success";
+				}
+
+			}
+
+		}
 		
 	}
 
@@ -206,5 +231,53 @@ class UtilidadesVarias {
 		$modeloequipo = Equipo::model()->findByPk($equipo);
 		return $modeloequipo->tipoequipo->Dominio.' / '.$modeloequipo->Serial;
 	}
+
+	public static function novedaditem($id, $item_act, $item_nue, $descripcion_act, $descripcion_nue, $cant_act, $cant_nue, $vlr_unit_act, $vlr_unit_nue, $estado_act, $estado_nue){
+
+		$texto_novedad = "";
+		$flag = 0;
+
+		if($item_act != $item_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Item: ".$item_act." / ".$item_nue.", ";
+		}
+
+		if($descripcion_act != $descripcion_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Descripción: ".$descripcion_act." / ".$descripcion_nue.", ";
+		}
+
+		if($cant_act != $cant_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Cant.: ".$cant_act." / ".$cant_nue.", ";
+		}
+
+		if($vlr_unit_act != $vlr_unit_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Vlr. unit.: ".number_format($vlr_unit_act, 0)." / ".number_format($vlr_unit_nue, 0).", ";
+		}
+
+		if($estado_act != $estado_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Estado: ".UtilidadesVarias::textoestado1($estado_act)." / ".UtilidadesVarias::textoestado1($estado_nue).", ";
+		}
+
+		//alguno de los criterios cambio
+		if($flag == 1){
+			$texto_novedad = substr ($texto_novedad, 0, -2);
+			$nueva_novedad = new HistItemCont;
+			$nueva_novedad->Id_Item = $id;
+			$nueva_novedad->Novedad = $texto_novedad;
+			$nueva_novedad->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
+			$nueva_novedad->Fecha_Creacion = date('Y-m-d H:i:s');
+			$nueva_novedad->save();
+		}
+	}
+
 
 }
