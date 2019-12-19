@@ -342,8 +342,14 @@
         	        ),
                     array(
                         'class'=>'CButtonColumn',
-                        'template'=>'{update}',
+                        'template'=>'{viewequipo}{update}',
                         'buttons'=>array(
+                            'viewequipo' => array(
+                                'label'=>'<i class="fa fa-eye actions text-black"></i>',
+                                'imageUrl'=>false,                    
+                                'url'=>'Yii::app()->createUrl("Equipo/view", array("id"=>$data->Id_Equipo))',
+                                'options'=>array('title'=>' Ver detalle de equipo en nueva pestaña', 'target' => '_new'),
+                            ),
                             'update'=>array(
                                 'label'=>'<i class="fa fa-times actions text-black"></i>',
                                 'imageUrl'=>false,

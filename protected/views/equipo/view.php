@@ -214,8 +214,14 @@
     	        ),
                 array(
                     'class'=>'CButtonColumn',
-                    'template'=>'{update}',
+                    'template'=>'{viewlicencia}{update}',
                     'buttons'=>array(
+                        'viewlicencia' => array(
+                            'label'=>'<i class="fa fa-eye actions text-black"></i>',
+                            'imageUrl'=>false,                    
+                            'url'=>'Yii::app()->createUrl("Licencia/view", array("id"=>$data->Id_Licencia))',
+                            'options'=>array('title'=>' Ver detalle de licencia en nueva pestaña', 'target' => '_new'),
+                        ),
                         'update'=>array(
                             'label'=>'<i class="fa fa-times actions text-black"></i>',
                             'imageUrl'=>false,
