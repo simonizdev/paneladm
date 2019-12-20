@@ -233,9 +233,9 @@ class ContController extends Controller
 		
 		//panel de control exterior
 		$titulo ='<h3>Resumen panel de control contratos</h3>';
-		$modeloconalerta=Cont::model()->findAll("DATEDIFF(day,'".date('Y-m-d')."',Fecha_Ren_Can) < Dias_Alerta AND Estado = 1");
+		$modeloconalerta=Cont::model()->findAll("DATEDIFF(day,'".date('Y-m-d')."',Fecha_Final) < Dias_Alerta AND Estado = 1");
 		$numconalerta = count ($modeloconalerta);
-		$modelosinalerta=Cont::model()->findAll("DATEDIFF(day,'".date('Y-m-d')."',Fecha_Ren_Can) >= Dias_Alerta AND Estado = 1");
+		$modelosinalerta=Cont::model()->findAll("DATEDIFF(day,'".date('Y-m-d')."',Fecha_Final) >= Dias_Alerta AND Estado = 1");
 		$numsinalerta = count ($modelosinalerta);
 		$modeloinactivos=Cont::model()->findAll("Estado = 0");
 		$numinactivos = count ($modeloinactivos);

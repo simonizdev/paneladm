@@ -227,6 +227,7 @@
                 'enableSorting' => false,
                 'columns'=>array(
                     'Id_Item',
+                    'Id',
                     'Item',
                     'Descripcion',
                     array(

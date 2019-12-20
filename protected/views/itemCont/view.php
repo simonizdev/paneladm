@@ -34,11 +34,17 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="form-group">
+                        <label>ID de item</label>
+                        <?php echo '<p>'.$model->Id.'</p>';?>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
                         <label>Item</label>
                         <?php echo '<p>'.$model->Item.'</p>';?>
                     </div>
                 </div>
-                <div class="col-sm-6" style="word-wrap: break-word;">
+                <div class="col-sm-3" style="word-wrap: break-word;">
                     <div class="form-group">
                         <label>Descripción</label>
                         <?php echo '<p>'. $model->Descripcion.'</p>';?>

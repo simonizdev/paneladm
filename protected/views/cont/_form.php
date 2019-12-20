@@ -79,38 +79,61 @@
 <div class="row">
   <div class="col-sm-4">
       <div class="form-group">
-            <?php echo $form->error($model,'Periodicidad', array('class' => 'pull-right badge bg-red')); ?>
-            <?php echo $form->label($model,'Periodicidad'); ?>
-            <?php
-                $this->widget('ext.select2.ESelect2',array(
-                    'name'=>'Cont[Periodicidad]',
-                    'id'=>'Cont_Periodicidad',
-                    'data'=>$lista_period,
-                    'value' => $model->Periodicidad,
-                    'htmlOptions'=>array(),
-                    'options'=>array(
-                        'placeholder'=>'Seleccione...',
-                        'width'=> '100%',
-                        'allowClear'=>true,
-                    ),
-                ));
-            ?>  
-        </div>
-    </div>
-	<div class="col-sm-4">
-    	<div class="form-group">
-        	<?php echo $form->error($model,'Fecha_Inicial', array('class' => 'pull-right badge bg-red')); ?>
-        	<?php echo $form->label($model,'Fecha_Inicial'); ?>
-        	<?php echo $form->textField($model,'Fecha_Inicial', array('class' => 'form-control', 'readonly' => true)); ?>
-    	</div>
-	</div>
-	<div class="col-sm-4">
-    	<div class="form-group">
-        	<?php echo $form->error($model,'Fecha_Final', array('class' => 'pull-right badge bg-red')); ?>
-        	<?php echo $form->label($model,'Fecha_Final'); ?>
-        	<?php echo $form->textField($model,'Fecha_Final', array('class' => 'form-control', 'readonly' => true)); ?>
-    	</div>
-	</div>
+        <?php echo $form->error($model,'Vlr_Contrato', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'Vlr_Contrato'); ?>
+        <?php echo $form->numberField($model,'Vlr_Contrato', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
+      </div>
+  </div>
+  <div class="col-sm-4">
+    <div class="form-group">
+          <?php echo $form->error($model,'Periodicidad', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Periodicidad'); ?>
+          <?php
+              $this->widget('ext.select2.ESelect2',array(
+                  'name'=>'Cont[Periodicidad]',
+                  'id'=>'Cont_Periodicidad',
+                  'data'=>$lista_period,
+                  'value' => $model->Periodicidad,
+                  'htmlOptions'=>array(),
+                  'options'=>array(
+                      'placeholder'=>'Seleccione...',
+                      'width'=> '100%',
+                      'allowClear'=>true,
+                  ),
+              ));
+          ?>  
+      </div>
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+          <?php echo $form->error($model,'Area', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Area'); ?>
+          <?php echo $form->textField($model,'Area', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+      </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+      <div class="form-group">
+          <?php echo $form->error($model,'Fecha_Inicial', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Fecha_Inicial'); ?>
+          <?php echo $form->textField($model,'Fecha_Inicial', array('class' => 'form-control', 'readonly' => true)); ?>
+      </div>
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+          <?php echo $form->error($model,'Fecha_Final', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Fecha_Final'); ?>
+          <?php echo $form->textField($model,'Fecha_Final', array('class' => 'form-control', 'readonly' => true)); ?>
+      </div>
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+          <?php echo $form->error($model,'Dias_Alerta', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Dias_Alerta'); ?>
+          <?php echo $form->numberField($model,'Dias_Alerta', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
+      </div>
+  </div>
 </div>
 <div class="row">
   <div class="col-sm-4">
@@ -120,22 +143,6 @@
           <?php echo $form->textField($model,'Fecha_Ren_Can', array('class' => 'form-control', 'readonly' => true)); ?>
       </div>
   </div>
-  <div class="col-sm-4">
-        <div class="form-group">
-          <?php echo $form->error($model,'Vlr_Contrato', array('class' => 'pull-right badge bg-red')); ?>
-          <?php echo $form->label($model,'Vlr_Contrato'); ?>
-          <?php echo $form->numberField($model,'Vlr_Contrato', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
-        </div>
-    </div>
-	<div class="col-sm-4">
-    	<div class="form-group">
-        	<?php echo $form->error($model,'Area', array('class' => 'pull-right badge bg-red')); ?>
-        	<?php echo $form->label($model,'Area'); ?>
-        	<?php echo $form->textField($model,'Area', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
-    	</div>
-	</div>
-</div>
-<div class="row">
 	<div class="col-sm-4">
     	<div class="form-group">
             <?php echo $form->error($model,'Observaciones', array('class' => 'pull-right badge bg-red')); ?>
@@ -143,13 +150,6 @@
             <?php echo $form->textArea($model,'Observaciones',array('class' => 'form-control', 'rows'=>6, 'cols'=>50, 'onkeyup' => 'convert_may(this)')); ?>
     	</div>
 	</div>
-  <div class="col-sm-4">
-      <div class="form-group">
-          <?php echo $form->error($model,'Dias_Alerta', array('class' => 'pull-right badge bg-red')); ?>
-          <?php echo $form->label($model,'Dias_Alerta'); ?>
-          <?php echo $form->numberField($model,'Dias_Alerta', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
-      </div>
-  </div>
 	<div class="col-sm-4">
         <div class="form-group">
             <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
@@ -215,19 +215,45 @@ $(function() {
 	}).on('changeDate', function (selected) {
 	   var maxDate = new Date(selected.date.valueOf());
 	   $('#PcContrato_Fecha_Inicial').datepicker('setEndDate', maxDate);
+     calcfecrencan();
 	});
 
-  $("#Cont_Fecha_Ren_Can").datepicker({
-    language: 'es',
-    autoclose: true,
-    orientation: "right bottom",
-  }).on('changeDate', function (selected) {
-     var maxDate = new Date(selected.date.valueOf());
-     $('#Cont_Fecha_Inicial').datepicker('setEndDate', maxDate);
+  $("#Cont_Dias_Alerta").change(function() {
+    calcfecrencan();
   });
 
+  function calcfecrencan(){
+    var fecha_final = $("#Cont_Fecha_Final").val();
+    var dias_ant = $("#Cont_Dias_Alerta").val();
+
+    if(fecha_final != "" && dias_ant != ""){
+      
+      var fecha = new Date(fecha_final);
+      var dias = dias_ant;
+      fecha.setDate(fecha.getDate() - dias);
+
+      dia = fecha.getDate() + 1;
+      mes = fecha.getMonth() + 1;
+      anio = fecha.getFullYear();
+     
+      dia = (dia.toString().length == 1) ? "0" + dia.toString() : dia;
+      mes = (mes.toString().length == 1) ? "0" + mes.toString() : mes;
+
+      fecha_ren_can = anio+'-'+mes+'-'+dia;
+
+      $("#Cont_Fecha_Ren_Can").val(fecha_ren_can); 
+
+
+
+    }else{
+      $("#Cont_Fecha_Ren_Can").val(''); 
+    }
+  }
 
 });
+
+
+
 
 	
 </script>

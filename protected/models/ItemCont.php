@@ -6,6 +6,7 @@
  * The followings are the available columns in table 'TH_ITEM_CONT':
  * @property integer $Id_Item
  * @property integer $Id_Contrato
+ * @property string $Id
  * @property string $Item
  * @property string $Descripcion
  * @property integer $Cant
@@ -44,10 +45,10 @@ class ItemCont extends CActiveRecord
 		return array(
 			array('Id_Contrato, Item, Descripcion, Cant, Vlr_Unit, Estado', 'required'),
 			array('Id_Contrato, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
-			array('Item', 'length', 'max'=>200),
+			array('Id, Item', 'length', 'max'=>200),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('Id_Item, Id_Contrato, Item, Descripcion, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
+			array('Id_Item, Id_Contrato, Id, Item, Descripcion, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -70,6 +71,12 @@ class ItemCont extends CActiveRecord
 		return $vlr_total_item;
 
  	}
+
+ 	public function getIdItem_Item(){
+
+		return $this->Id.' - '.$this->Item;
+
+	}
 
 
 	/**
@@ -94,6 +101,7 @@ class ItemCont extends CActiveRecord
 		return array(
 			'Id_Item' => 'ID',
 			'Id_Contrato' => 'Contrato (ID / Proveedor - Concepto)',
+			'Id' => 'ID de item',
 			'Item' => 'Item',
 			'Descripcion' => 'Descripción',
 			'Cant' => 'Cant.',
@@ -127,6 +135,7 @@ class ItemCont extends CActiveRecord
 
 		$criteria->compare('t.Id_Item',$this->Id_Item);
 		$criteria->compare('t.Id_Contrato',$this->Id_Contrato);
+		$criteria->compare('t.Id',$this->Id,true);
 		$criteria->compare('t.Item',$this->Item,true);
 		$criteria->compare('t.Descripcion',$this->Descripcion,true);
 		$criteria->compare('t.Cant',$this->Cant);

@@ -107,6 +107,7 @@ class ItemContController extends Controller
 	{
 		$model=$this->loadModel($id);
 
+		$id_item_act = $model->Id;
 		$item_act = $model->Item;
 		$descripcion_act = $model->Descripcion;
 		$cant_act = $model->Cant;
@@ -125,7 +126,9 @@ class ItemContController extends Controller
 				
 				//función para registrar cambios en las Cuentas
 				UtilidadesVarias::novedaditem(
-					$id,  
+					$id,
+					$id_item_act,
+					$model->Id,  
 					$item_act, 
 					$model->Item,
 					$descripcion_act, 

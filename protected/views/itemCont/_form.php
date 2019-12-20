@@ -17,7 +17,7 @@
 )); ?>
 
 <div class="row">
-  	<div class="col-sm-8">
+  	<div class="col-sm-4">
         <div class="form-group">
           <?php echo $form->error($model,'Id_Contrato', array('class' => 'pull-right badge bg-red')); ?>
     			<?php echo $form->label($model,'Id_Contrato'); ?>
@@ -30,12 +30,19 @@
         </div>
     </div>
   	<div class="col-sm-4">
-      	<div class="form-group">
-  			<?php echo $form->error($model,'Item', array('class' => 'pull-right badge bg-red')); ?>
-      		<?php echo $form->label($model,'Item'); ?>
-      		<?php echo $form->textField($model,'Item', array('class' => 'form-control', 'maxlength' => '200', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
-      	</div>
-  	</div>
+        <div class="form-group">
+          <?php echo $form->error($model,'Id', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Id'); ?>
+          <?php echo $form->textField($model,'Id', array('class' => 'form-control', 'maxlength' => '200', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="form-group">
+          <?php echo $form->error($model,'Item', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Item'); ?>
+          <?php echo $form->textField($model,'Item', array('class' => 'form-control', 'maxlength' => '200', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+        </div>
+    </div>
 </div>
 <div class="row">
 	  

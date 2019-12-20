@@ -3,7 +3,7 @@
 /* @var $model FactItemCont */
 
 //para combos de items 
-$lista_items = CHtml::listData($items, 'Id_Item', 'Item');
+$lista_items = CHtml::listData($items, 'Id_Item', 'IdItem_Item');
 
 ?>
 

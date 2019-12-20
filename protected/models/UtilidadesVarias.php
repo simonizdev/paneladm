@@ -187,7 +187,7 @@ class UtilidadesVarias {
 
 			}else{
 
-				$str = strtotime($modelocon->Fecha_Ren_Can) - strtotime(date('Y-m-d'));
+				$str = strtotime($modelocon->Fecha_Final) - strtotime(date('Y-m-d'));
 				$diff = floor($str/3600/24);
 
 				if ($diff < $modelocon->Dias_Alerta){
@@ -232,10 +232,16 @@ class UtilidadesVarias {
 		return $modeloequipo->tipoequipo->Dominio.' / '.$modeloequipo->Serial;
 	}
 
-	public static function novedaditem($id, $item_act, $item_nue, $descripcion_act, $descripcion_nue, $cant_act, $cant_nue, $vlr_unit_act, $vlr_unit_nue, $estado_act, $estado_nue){
+	public static function novedaditem($id, $id_item_act, $id_item_nue, $item_act, $item_nue, $descripcion_act, $descripcion_nue, $cant_act, $cant_nue, $vlr_unit_act, $vlr_unit_nue, $estado_act, $estado_nue){
 
 		$texto_novedad = "";
 		$flag = 0;
+
+		if($id_item_act != $id_item_nue){
+			$flag = 1;
+
+			$texto_novedad .= "ID de item: ".$id_item_act." / ".$id_item_nue.", ";
+		}
 
 		if($item_act != $item_nue){
 			$flag = 1;
