@@ -43,7 +43,7 @@ class ItemCont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Id_Contrato, Item, Descripcion, Cant, Vlr_Unit, Estado', 'required'),
+			array('Id_Contrato, Id, Item, Descripcion, Cant, Vlr_Unit, Estado', 'required'),
 			array('Id_Contrato, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Id, Item', 'length', 'max'=>200),
 			// The following rule is used by search().
