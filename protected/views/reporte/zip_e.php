@@ -6,15 +6,12 @@
 //para combos de tipos de equipo
 $lista_tipos_equipo = CHtml::listData($tipos_equipo, 'Id_Dominio', 'Dominio');
 
-//para combos clases de licencia
-$lista_clases_licencia = CHtml::listData($clases_licencias, 'Id_Dominio', 'Dominio');
-
 //para combos de empresas
 $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
 
 ?>
 
-<h3>Soportes equipos / licencias</h3>
+<h3>Soporte(s) equipo(s)</h3>
 
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'reporte-form',
@@ -137,30 +134,6 @@ $lista_empresas = CHtml::listData($empresas, 'Id_Empresa', 'Descripcion');
     </div>
   </div>          
 </div>
-<div class="row" id="div_inc_lic" style="display: none;">
-  <div class="col-sm-12">
-  	<div class="form-group">
-      <?php echo $form->error($model,'inc_lic', array('class' => 'pull-right badge bg-red')); ?>
-      <?php echo $form->label($model,'inc_lic'); ?>
-      <?php
-          $this->widget('ext.select2.ESelect2',array(
-              'name'=>'Reporte[inc_lic]',
-              'id'=>'Reporte_inc_lic',
-              'data'=>$lista_clases_licencia,
-              'htmlOptions'=>array(
-                  'multiple'=>'multiple',
-              ),
-              'options'=>array(
-                  'placeholder'=>'Seleccione...',
-                  'width'=> '100%',
-                  'allowClear'=>true,
-              ),
-          ));
-      ?>
-      <?php //echo $form->checkBoxList($model, 'inc_lic', array('1'=>'S.O','2'=>'Office'),array('class'=>'')); ?>
-    </div>
-  </div> 
-</div>
 
 <div class="btn-group" style="padding-bottom: 2%">
     <button type="button" class="btn btn-success" onclick="resetfields();"><i class="fa fa-eraser"></i> Limpiar filtros </button>
@@ -200,22 +173,17 @@ $(function() {
     
     $('#div_tipos').hide();
     $('#Reporte_tipo_equipo').val('').trigger('change');
-    
-    $('#div_inc_lic').hide();
-    $('#Reporte_inc_lic').val('').trigger('change');
 
     if(opc != ""){
       if(opc == 1){
         //individual
         $('#div_equipo').show();
-        $('#div_inc_lic').show();
       }else{
         //grupal
         $('#div_f_i').show();
         $('#div_f_f').show();
         $('#div_empresa').show();
         $('#div_tipos').show();
-        $('#div_inc_lic').show();
       }
     }
     
@@ -235,13 +203,6 @@ $(function() {
     }
   });
 
-  $('#Reporte_inc_lic').change(function(){
-    if(this.value != ""){
-      $('#Reporte_inc_lic_em_').html('');
-      $('#Reporte_inc_lic_em_').hide(); 
-    }
-  });
-
   $("#valida_form").click(function() {
 
       var form = $("#reporte-form");
@@ -258,7 +219,6 @@ $(function() {
           var fecha_compra_inicial = $('#Reporte_fecha_compra_inicial').val();
           var fecha_compra_final = $('#Reporte_fecha_compra_final').val();
           var empresa_compra = $('#Reporte_empresa_compra').val();
-          var inc_lic = $('#Reporte_inc_lic').val();
 
           var cad_tipos_equipo = "";
 
@@ -272,26 +232,13 @@ $(function() {
             var tipos_equipo = "";  
           }
 
-          /*var cad_inc_lic = "";
-
-          $('#Reporte_inc_lic :selected').each(function(i, sel){ 
-              cad_inc_lic += $(sel).val()+','; 
-          });
-
-          var inc_lic = cad_tipos_equipo.slice(0,-1);*/
-
           if(opc == 1){
             //individual
-            if(serial == "" ||  inc_lic == ""){
+            if(serial == ""){
 
               if(serial == ""){
                 $('#Reporte_equipo_em_').html('Serial no puede ser nulo.');
                 $('#Reporte_equipo_em_').show(); 
-              }
-
-              if(inc_lic == ""){
-                $('#Reporte_inc_lic_em_').html('Incluir licencia(s) no puede ser nulo.');
-                $('#Reporte_inc_lic_em_').show(); 
               }
 
               $valid = 0;
@@ -300,32 +247,15 @@ $(function() {
               $('#Reporte_equipo_em_').html('');
               $('#Reporte_equipo_em_').hide();
 
-              $('#Reporte_inc_lic_em_').html('');
-              $('#Reporte_inc_lic_em_').hide();
-
-              var cad_inc_lic = "";
-
-              $('#Reporte_inc_lic :selected').each(function(i, sel){ 
-                  cad_inc_lic += $(sel).val()+','; 
-              });
-
-              var inc_lic = cad_inc_lic.slice(0,-1);
-
               $valid = 1;
             }
           }else{
             //grupo
-            if(empresa_compra == "" ||  inc_lic == ""){
+            if(empresa_compra == ""){
               
               if(empresa_compra == ""){
                 $('#Reporte_empresa_compra_em_').html('Empresa no puede ser nulo.');
                 $('#Reporte_empresa_compra_em_').show();
-              }
-
-
-              if(inc_lic == ""){
-                $('#Reporte_inc_lic_em_').html('Incluir licencia(s) no puede ser nulo.');
-                $('#Reporte_inc_lic_em_').show(); 
               }
 
               $valid = 0;
@@ -333,17 +263,6 @@ $(function() {
             }else{
               $('#Reporte_empresa_compra_em_').html('');
               $('#Reporte_empresa_compra_em_').hide();
-
-              $('#Reporte_inc_lic_em_').html('');
-              $('#Reporte_inc_lic_em_').hide();
-
-              var cad_inc_lic = "";
-
-              $('#Reporte_inc_lic :selected').each(function(i, sel){ 
-                  cad_inc_lic += $(sel).val()+','; 
-              });
-
-              var inc_lic = cad_inc_lic.slice(0,-1);
 
               $valid = 1;
             }
@@ -356,13 +275,12 @@ $(function() {
               fecha_compra_inicial: fecha_compra_inicial,
               fecha_compra_final: fecha_compra_final,
               empresa_compra: empresa_compra,
-              tipos_equipo: tipos_equipo,
-              inc_lic: inc_lic
+              tipos_equipo: tipos_equipo
             }
             
             $.ajax({ 
               type: "POST", 
-              url: "<?php echo Yii::app()->createUrl('reporte/soportesequipo'); ?>",
+              url: "<?php echo Yii::app()->createUrl('reporte/soportese'); ?>",
               data: data,
               dataType: "json",
               beforeSend: function(){

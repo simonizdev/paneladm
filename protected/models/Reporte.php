@@ -22,7 +22,9 @@ class Reporte extends CFormModel
             array('fecha_factura_inicial, fecha_factura_final', 'safe'),
             array('opc', 'required','on'=>'zip_soportes'),
             array('opcion_exp', 'required','on'=>'lic_disp'),
-            array('tipo_lic, opcion_exp', 'required','on'=>'lic_equipos'),                  
+            array('tipo_lic, opcion_exp', 'required','on'=>'lic_equipos'),
+            array('opc', 'required','on'=>'zip_e'), 
+            array('opc', 'required','on'=>'zip_l'),                 
         );  
     }
 
