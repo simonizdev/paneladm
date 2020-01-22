@@ -70,6 +70,8 @@ class ItemContController extends Controller
 	{
 		$model=new ItemCont;
 
+		$monedas =Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Estado=:estado AND Id_Padre = '.Yii::app()->params->monedas, 'params'=>array(':estado'=>1)));
+
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -95,6 +97,7 @@ class ItemContController extends Controller
 		$this->render('create',array(
 			'model'=>$model,
 			'c'=>$c,
+			'monedas'=>$monedas,
 		));
 	}
 
@@ -107,11 +110,14 @@ class ItemContController extends Controller
 	{
 		$model=$this->loadModel($id);
 
+		$monedas =Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Estado=:estado AND Id_Padre = '.Yii::app()->params->monedas, 'params'=>array(':estado'=>1)));
+
 		$id_item_act = $model->Id;
 		$item_act = $model->Item;
 		$descripcion_act = $model->Descripcion;
 		$cant_act = $model->Cant;
 		$vlr_unit_act = $model->Vlr_Unit;
+		$moneda_act = $model->Moneda;
 		$estado_act = $model->Estado;
 
 		// Uncomment the following line if AJAX validation is needed
@@ -137,6 +143,8 @@ class ItemContController extends Controller
 					$model->Cant,
 					$vlr_unit_act, 
 					$model->Vlr_Unit,
+					$moneda_act,
+					$model->Moneda,
 					$estado_act, 
 					$model->Estado,
 				);
@@ -154,6 +162,7 @@ class ItemContController extends Controller
 		$this->render('update',array(
 			'model'=>$model,
 			'c'=>$model->Id_Contrato,
+			'monedas'=>$monedas,
 		));
 	}
 

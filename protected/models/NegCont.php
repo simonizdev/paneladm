@@ -1,17 +1,15 @@
 <?php
 
 /**
- * This is the model class for table "TH_ITEM_CONT".
+ * This is the model class for table "TH_NEG_CONT".
  *
- * The followings are the available columns in table 'TH_ITEM_CONT':
- * @property integer $Id_Item
+ * The followings are the available columns in table 'TH_NEG_CONT':
+ * @property integer $Id_Neg
  * @property integer $Id_Contrato
- * @property string $Id
  * @property string $Item
- * @property string $Descripcion
- * @property integer $Cant
+ * @property integer $Costo
  * @property integer $Moneda
- * @property integer $Vlr_Unit
+ * @property string $Porc_Desc
  * @property integer $Estado
  * @property integer $Id_Usuario_Creacion
  * @property string $Fecha_Creacion
@@ -20,20 +18,21 @@
  *
  * The followings are the available model relations:
  * @property THCONT $idContrato
+ * @property THDOMINIO $moneda
  * @property THUSUARIO $idUsuarioCreacion
  * @property THUSUARIO $idUsuarioActualizacion
  */
-class ItemCont extends CActiveRecord
+class NegCont extends CActiveRecord
 {
 	
-	public $vlr_total;
+	public $costo_final;
 
 	/**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
 	{
-		return 'TH_ITEM_CONT';
+		return 'TH_NEG_CONT';
 	}
 
 	/**
@@ -44,12 +43,12 @@ class ItemCont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Id_Contrato, Id, Item, Descripcion, Cant, Moneda, Vlr_Unit, Estado', 'required'),
-			array('Id_Contrato, Cant, Moneda, Vlr_Unit, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
-			array('Id, Item', 'length', 'max'=>200),
+			array('Id_Contrato, Item, Costo, Moneda, Porc_Desc, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
+			array('Id_Contrato, Costo, Moneda, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
+			array('Porc_Desc', 'length', 'max'=>5),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('Id_Item, Id_Contrato, Id, Item, Descripcion, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
+			array('Id_Neg, Id_Contrato, Item, Costo, Moneda, Porc_Desc, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -63,22 +62,18 @@ class ItemCont extends CActiveRecord
 
  	}
 
- 	public function VlrTotalItem($Id_Item) {
+	public function CostoFinal($Id_Neg) {
 
-		$modelo_item_cont = ItemCont::model()->findByPk($Id_Item);
+		$modelo_neg = NegCont::model()->findByPk($Id_Neg);
 
-		$vlr_total_item = $modelo_item_cont->Vlr_Unit * $modelo_item_cont->Cant;
-		
-		return $vlr_total_item;
+		$costo = $modelo_neg->Costo;
+		$porc_desc = $modelo_neg->Porc_Desc;
+
+		$costo_final = ($costo - (($costo * $porc_desc) / 100));
+
+		return number_format($costo_final, 0);
 
  	}
-
- 	public function getIdItem_Item(){
-
-		return $this->Id.' - '.$this->Item;
-
-	}
-
 
 	/**
 	 * @return array relational rules.
@@ -88,10 +83,10 @@ class ItemCont extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'idContrato' => array(self::BELONGS_TO, 'Cont', 'Id_Contrato'),
+			'idcontrato' => array(self::BELONGS_TO, 'Cont', 'Id_Contrato'),
+			'moneda' => array(self::BELONGS_TO, 'Dominio', 'Moneda'),
 			'idusuarioact' => array(self::BELONGS_TO, 'Usuario', 'Id_Usuario_Actualizacion'),
 			'idusuariocre' => array(self::BELONGS_TO, 'Usuario', 'Id_Usuario_Creacion'),
-			'moneda' => array(self::BELONGS_TO, 'Dominio', 'Moneda'),
 		);
 	}
 
@@ -101,20 +96,18 @@ class ItemCont extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'Id_Item' => 'ID',
+			'Id_Neg' => 'ID',
 			'Id_Contrato' => 'Contrato (ID / Proveedor - Concepto)',
-			'Id' => 'ID de item',
 			'Item' => 'Item',
-			'Descripcion' => 'Descripción',
-			'Cant' => 'Cant.',
+			'Costo' => 'Costo',
 			'Moneda' => 'Moneda',
-			'Vlr_Unit' => 'Vlr. unit.',
+			'Porc_Desc' => '% Desc.',
 			'Estado' => 'Estado',
 			'Id_Usuario_Creacion' => 'Usuario que creo',
 			'Id_Usuario_Actualizacion' => 'Usuario que actualizó',
 			'Fecha_Creacion' => 'Fecha de creación',
 			'Fecha_Actualizacion' => 'Fecha de actualización',
-			'vlr_total' => 'Vlr. total',
+			'costo_final' => 'Costo final',
 		);
 	}
 
@@ -136,20 +129,18 @@ class ItemCont extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('t.Id_Item',$this->Id_Item);
+		$criteria->compare('t.Id_Neg',$this->Id_Neg);
 		$criteria->compare('t.Id_Contrato',$this->Id_Contrato);
-		$criteria->compare('t.Id',$this->Id,true);
 		$criteria->compare('t.Item',$this->Item,true);
-		$criteria->compare('t.Descripcion',$this->Descripcion,true);
-		$criteria->compare('t.Cant',$this->Cant);
+		$criteria->compare('t.Costo',$this->Costo);
 		$criteria->compare('t.Moneda',$this->Moneda);
-		$criteria->compare('t.Vlr_Unit',$this->Vlr_Unit);
+		$criteria->compare('t.Porc_Desc',$this->Porc_Desc,true);
 		$criteria->compare('t.Estado',$this->Estado);
 		$criteria->compare('t.Id_Usuario_Creacion',$this->Id_Usuario_Creacion);
 		$criteria->compare('t.Fecha_Creacion',$this->Fecha_Creacion,true);
 		$criteria->compare('t.Id_Usuario_Actualizacion',$this->Id_Usuario_Actualizacion);
 		$criteria->compare('t.Fecha_Actualizacion',$this->Fecha_Actualizacion,true);
-		$criteria->order = 't.Id_Item DESC';
+		$criteria->order = 't.Id_Neg DESC';
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -160,7 +151,7 @@ class ItemCont extends CActiveRecord
 	 * Returns the static model of the specified AR class.
 	 * Please note that you should have this exact method in all your CActiveRecord descendants!
 	 * @param string $className active record class name.
-	 * @return ItemCont the static model class
+	 * @return NegCont the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{

@@ -31,6 +31,7 @@
             <span class="sr-only">Opciones de contrato</span>
         </button>
         <ul class="dropdown-menu" role="menu">
+            <li><a role="menuitem" tabindex="-1" href="<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=negCont/create&c='.$model->Id_Contrato; ?>">Asociar negociación</a></li>
             <li><a role="menuitem" tabindex="-1" href="<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=anexoCont/create&c='.$model->Id_Contrato; ?>">Asociar anexo</a></li>
             <li><a role="menuitem" tabindex="-1" href="<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=itemCont/create&c='.$model->Id_Contrato; ?>">Asociar item</a></li> 
             <li><a role="menuitem" tabindex="-1" href="<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=factItemCont/create&c='.$model->Id_Contrato; ?>">Asociar factura</a></li> 
@@ -41,6 +42,7 @@
 <div class="nav-tabs-custom" style="margin-top: 2%;">
     <ul class="nav nav-tabs" style="font-size: 12px !important;">
       <li class="active"><a href="#info" data-toggle="tab">Información</a></li>
+      <li><a href="#neg" data-toggle="tab">Negociaciones</a></li>
       <li><a href="#ane" data-toggle="tab">Anexo(s)</a></li>
       <li><a href="#ite" data-toggle="tab">Item(s)</a></li>
       <li><a href="#pag" data-toggle="tab">Factura(s)</a></li>
@@ -121,7 +123,7 @@
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Valor</label>
-                        <?php echo '<p>'.number_format($model->Vlr_Contrato, 0).'</p>';?>
+                        <?php echo '<p>'.$model->VlrCont($model->Id_Contrato).'</p>';?>
                     </div>
                 </div>
             </div>
@@ -182,6 +184,64 @@
                     </div>
                 </div>  
             </div>
+        </div>
+        <div class="tab-pane" id="neg">
+            <?php $this->widget('zii.widgets.grid.CGridView', array(
+                'id'=>'neg-cont-grid',
+                'dataProvider'=>$neg->search(),
+                //'filter'=>$model,
+                'enableSorting' => false,
+                'columns'=>array(
+                    'Id_Neg',
+                    'Item',
+                    array(
+                        'name'=>'Costo',
+                        'value'=>function($data){
+                            return number_format($data->Costo, 0);
+                        },
+                        'htmlOptions'=>array('style' => 'text-align: right;'),
+                    ),
+                    array(
+                        'name' => 'Moneda',
+                        'value' => '$data->moneda->Dominio',
+                    ),
+                    array(
+                        'name'=>'Porc_Desc',
+                        'value'=>function($data){
+                            return number_format($data->Porc_Desc, 2);
+                        },
+                        'htmlOptions'=>array('style' => 'text-align: right;'),
+                    ),
+                    array(
+                        'name'=>'costo_final',
+                        'value' => '$data->CostoFinal($data->Id_Neg)',
+                        'htmlOptions'=>array('style' => 'text-align: right;'),
+                    ),
+                    array(
+                        'name'=>'Estado',
+                        'value'=>'UtilidadesVarias::textoestado1($data->Estado)',
+                    ),
+                    array(
+                        'class'=>'CButtonColumn',
+                        'template'=>'{view}{update}',
+                        'buttons'=>array(
+                            'view'=>array(
+                                'label'=>'<i class="fa fa-eye actions text-black"></i>',
+                                'imageUrl'=>false,
+                                'options'=>array('title'=>'Visualizar'),
+                                'url'=>'Yii::app()->createUrl("NegCont/view", array("id"=>$data->Id_Neg))',
+                            ),
+                            'update'=>array(
+                                'label'=>'<i class="fa fa-pencil actions text-black"></i>',
+                                'imageUrl'=>false,
+                                'options'=>array('title'=>'Actualizar'),
+                                'url'=>'Yii::app()->createUrl("NegCont/update", array("id"=>$data->Id_Neg))',
+                                'visible'=> '(Yii::app()->user->getState("permiso_act") == true)',
+                            ),
+                        )
+                    ),
+                ),
+            )); ?>
         </div>
         <div class="tab-pane" id="ane">
         	<?php $this->widget('zii.widgets.grid.CGridView', array(
@@ -249,6 +309,10 @@
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
                     array(
+                        'name' => 'Moneda',
+                        'value' => '$data->moneda->Dominio',
+                    ),
+                    array(
                         'name'=>'Estado',
                         'value'=>'UtilidadesVarias::textoestado1($data->Estado)',
                     ),
@@ -288,6 +352,11 @@
                         'value'=>'UtilidadesVarias::textofecha($data->Fecha_Factura)',
                     ),
                     'Items',
+                    array(
+                        'name' => 'vlr_total',
+                        'value' => '$data->TotalItems($data->Items)',
+                        'htmlOptions'=>array('style' => 'text-align: right;'),
+                    ),
                     array(
                         'name' => 'Estado',
                         'value' => '$data->DescEstado($data->Estado)',

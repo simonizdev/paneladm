@@ -45,7 +45,6 @@
 	        <?php echo $form->textField($model,'Fecha_Factura', array('class' => 'form-control datepicker', 'autocomplete' => 'off', 'readonly' => true)); ?>
 	  	</div>
 	</div>
-
   	<div class="col-sm-8">
       	<div class="form-group">
   			<?php echo $form->error($model,'Items', array('class' => 'pull-right badge bg-red')); ?>
@@ -70,27 +69,31 @@
   	</div>
 </div>
 <div class="row">
+  <div class="col-sm-4">
+    <?php echo $form->label($model,'vlr_total'); ?>
+    <?php echo '<p id="vlr_total">'.$model->TotalItems($model->Items).'</p>'; ?>
+  </div>
 	<div class="col-sm-4">
-        <div class="form-group">
-            <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
-            <?php echo $form->label($model,'Estado'); ?>
-            <?php $estados = array(0 => 'ANULADA', 1 => 'RECIBIDA') ?>
-            <?php
-                $this->widget('ext.select2.ESelect2',array(
-                    'name'=>'FactItemCont[Estado]',
-                    'id'=>'FactItemCont_Estado',
-                    'data'=>$estados,
-                    'value' => $model->Estado,
-                    'htmlOptions'=>array(),
-                    'options'=>array(
-                        'placeholder'=>'Seleccione...',
-                        'width'=> '100%',
-                        'allowClear'=>true,
-                    ),
-                ));
-            ?>
-        </div>
+    <div class="form-group">
+        <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'Estado'); ?>
+        <?php $estados = array(0 => 'ANULADA', 1 => 'RECIBIDA') ?>
+        <?php
+            $this->widget('ext.select2.ESelect2',array(
+                'name'=>'FactItemCont[Estado]',
+                'id'=>'FactItemCont_Estado',
+                'data'=>$estados,
+                'value' => $model->Estado,
+                'htmlOptions'=>array(),
+                'options'=>array(
+                    'placeholder'=>'Seleccione...',
+                    'width'=> '100%',
+                    'allowClear'=>true,
+                ),
+            ));
+        ?>
     </div>
+  </div>
 </div>
 
 
@@ -129,6 +132,27 @@ $(function() {
           }
       });
   	});
+
+});
+
+$("#FactItemCont_Items").change(function() {
+  var items = $(this).val();
+  
+  if(items != ""){
+      
+    var data = {items: items}
+    $.ajax({ 
+        type: "POST", 
+        url: "<?php echo Yii::app()->createUrl('factItemCont/totalitems'); ?>",
+        data: data,
+        success: function(response){
+           $('#vlr_total').text(response);
+        }
+    });
+
+  }else{
+    $('#vlr_total').text('-');
+  }
 
 });
 

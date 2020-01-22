@@ -1,6 +1,6 @@
 <?php
 
-class FactItemContController extends Controller
+class NegContController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -32,7 +32,7 @@ class FactItemContController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','totalitems'),
+				'actions'=>array('create','update','costofinal'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -62,25 +62,27 @@ class FactItemContController extends Controller
 	 */
 	public function actionCreate($c)
 	{
-		$model=new FactItemCont;
+		$model=new NegCont;
 
-		$items=ItemCont::model()->findAll(array('order'=>'Item', 'condition'=>'Id_Contrato = '.$c.' AND Estado = 1'));
+		$monedas =Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Estado=:estado AND Id_Padre = '.Yii::app()->params->monedas, 'params'=>array(':estado'=>1)));
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['FactItemCont']))
+		if(isset($_POST['NegCont']))
 		{
-			$model->attributes=$_POST['FactItemCont'];
-			$model->Id_Contrato = $c;
-			$model->Items = implode(',',$_POST['FactItemCont']['Items']);
+			$model->attributes=$_POST['NegCont'];
+ 			$model->Id_Contrato = $c;
 			$model->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
 			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
 			$model->Fecha_Creacion = date('Y-m-d H:i:s');
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
-
-			if($model->save()){
-            	Yii::app()->user->setFlash('success', "Se asocio la factura (".$model->Numero_Factura.") correctamente.");
+ 
+            if($model->save()){
+            	Yii::app()->user->setFlash('success', "Se asocio la negociación (ID ".$model->Id_Neg.") correctamente.");
+				$this->redirect(array('cont/view','id'=>$c));
+			}else{
+				Yii::app()->user->setFlash('warning', "No se pudo asociar la negociación.");
 				$this->redirect(array('cont/view','id'=>$c));
 			}
 		}
@@ -88,7 +90,7 @@ class FactItemContController extends Controller
 		$this->render('create',array(
 			'model'=>$model,
 			'c'=>$c,
-			'items'=>$items,
+			'monedas'=>$monedas,
 		));
 	}
 
@@ -101,22 +103,22 @@ class FactItemContController extends Controller
 	{
 		$model=$this->loadModel($id);
 
-		$items=ItemCont::model()->findAll(array('order'=>'Item', 'condition'=>'Id_Contrato = '.$model->Id_Contrato.' AND Estado = 1'));
+		$monedas =Dominio::model()->findAll(array('order'=>'Dominio', 'condition'=>'Estado=:estado AND Id_Padre = '.Yii::app()->params->monedas, 'params'=>array(':estado'=>1)));
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['FactItemCont']))
+		if(isset($_POST['NegCont']))
 		{
-			$model->attributes=$_POST['FactItemCont'];
-			$model->Items = implode(',',$_POST['FactItemCont']['Items']);
-			$model->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
+			$model->attributes=$_POST['NegCont'];
 			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
-			$model->Fecha_Creacion = date('Y-m-d H:i:s');
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
-
-			if($model->save()){
-            	Yii::app()->user->setFlash('success', "Se actualizo la factura (".$model->Numero_Factura.") correctamente.");
+ 
+            if($model->save()){
+            	Yii::app()->user->setFlash('success', "Se actualizo la negociación (ID ".$model->Id_Neg.") correctamente.");
+				$this->redirect(array('cont/view','id'=>$model->Id_Contrato));
+			}else{
+				Yii::app()->user->setFlash('warning', "No se pudo actualizar la negociación.");
 				$this->redirect(array('cont/view','id'=>$model->Id_Contrato));
 			}
 		}
@@ -124,8 +126,7 @@ class FactItemContController extends Controller
 		$this->render('update',array(
 			'model'=>$model,
 			'c'=>$model->Id_Contrato,
-			'items'=>$items,
-
+			'monedas'=>$monedas,
 		));
 	}
 
@@ -148,7 +149,7 @@ class FactItemContController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('FactItemCont');
+		$dataProvider=new CActiveDataProvider('NegCont');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -159,10 +160,10 @@ class FactItemContController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new FactItemCont('search');
+		$model=new NegCont('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['FactItemCont']))
-			$model->attributes=$_GET['FactItemCont'];
+		if(isset($_GET['NegCont']))
+			$model->attributes=$_GET['NegCont'];
 
 		$this->render('admin',array(
 			'model'=>$model,
@@ -173,12 +174,12 @@ class FactItemContController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
-	 * @return FactItemCont the loaded model
+	 * @return NegCont the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-		$model=FactItemCont::model()->findByPk($id);
+		$model=NegCont::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -186,51 +187,25 @@ class FactItemContController extends Controller
 
 	/**
 	 * Performs the AJAX validation.
-	 * @param FactItemCont $model the model to be validated
+	 * @param NegCont $model the model to be validated
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='fact-item-cont-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='neg-cont-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
 	}
 
-	public function actionTotalItems()
+	public function actionCostoFinal()
 	{
-		$items = implode(",", $_POST['items']);
+		$costo = $_POST['costo'];
+		$porc_desc = $_POST['porc_desc'];
 
-		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
+		$costo_final = ($costo - (($costo * $porc_desc) / 100));
 
-		$array_total_x_moneda = array();
-
-		foreach ($modelo_items_cont as $reg) {
-			
-			$Moneda =$reg['Moneda'];
-			$array_total_x_moneda[$Moneda] = 0; 	
-		}
-		
-		foreach ($modelo_items_cont as $reg) {
-
-			$Cant =$reg['Cant'];
-			$Vlr_Unit =$reg['Vlr_Unit'];
-			$Vlr_Total = $Vlr_Unit * $Cant;
-			$Moneda =$reg['Moneda'];
-
-			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
-			
-		}
-
-		$cadena_total = "";
-
-		foreach ($array_total_x_moneda as $id_moneda => $valor) {
-			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
-			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
-		}
-
-		$resp = substr ($cadena_total, 0, -2);
-
-		echo $resp;
+		echo number_format($costo_final, 0);
 	}
+
 }

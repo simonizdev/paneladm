@@ -60,15 +60,16 @@ $lista_period = CHtml::listData($period, 'Id_Dominio', 'Dominio');
         ),
 		'Area',
         array(
+            'name' => 'vlr_cont',
+            'value' => '$data->VlrCont($data->Id_Contrato)',
+            'htmlOptions'=>array('style' => 'text-align: right;'),
+        ),
+        /*array(
             'name'=>'Vlr_Contrato',
             'value'=>function($data){
                 return number_format($data->Vlr_Contrato, 0);
             },
             'htmlOptions'=>array('style' => 'text-align: right;'),
-        ),
-        /*array(
-            'name'=>'num_doc',
-            'value'=>'$data->Num_Doc($data->Id_Contrato)',
         ),*/
 		array(
             'name'=>'Fecha_Inicial',

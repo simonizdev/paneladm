@@ -44,20 +44,22 @@
                         <?php echo '<p>'.$model->Item.'</p>';?>
                     </div>
                 </div>
-                <div class="col-sm-3" style="word-wrap: break-word;">
+            </div>
+            <div class="row">
+                <div class="col-sm-9" style="word-wrap: break-word;">
                     <div class="form-group">
                         <label>Descripción</label>
                         <?php echo '<p>'. $model->Descripcion.'</p>';?>
                     </div>
                 </div>
-            </div>
-        	<div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Cant.</label>
                         <?php echo '<p>'.$model->Cant.'</p>';?>
                     </div>
                 </div>
+            </div>
+            <div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">
                         <label>Vlr. unit.</label>
@@ -68,6 +70,12 @@
                     <div class="form-group">
                         <label>Vlr. total</label>
                         <?php echo '<p>'.number_format($model->VlrTotalItem($model->Id_Item), 0).'</p>';?>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label>Moneda</label>
+                        <?php echo '<p>'.$model->moneda->Dominio.'</p>';?>
                     </div>
                 </div>
                 <div class="col-sm-3">

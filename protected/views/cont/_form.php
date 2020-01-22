@@ -78,13 +78,6 @@
 </div>
 <div class="row">
   <div class="col-sm-4">
-      <div class="form-group">
-        <?php echo $form->error($model,'Vlr_Contrato', array('class' => 'pull-right badge bg-red')); ?>
-        <?php echo $form->label($model,'Vlr_Contrato'); ?>
-        <?php echo $form->numberField($model,'Vlr_Contrato', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
-      </div>
-  </div>
-  <div class="col-sm-4">
     <div class="form-group">
           <?php echo $form->error($model,'Periodicidad', array('class' => 'pull-right badge bg-red')); ?>
           <?php echo $form->label($model,'Periodicidad'); ?>

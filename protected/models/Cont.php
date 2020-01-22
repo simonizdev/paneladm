@@ -11,7 +11,6 @@
  * @property string $Fecha_Inicial
  * @property string $Fecha_Final
  * @property string $Fecha_Ren_Can
- * @property integer $Vlr_Contrato
  * @property string $Area
  * @property string $Observaciones
  * @property integer $Periodicidad
@@ -38,6 +37,7 @@ class Cont extends CActiveRecord
 	public $usuario_actualizacion;
 	public $orderby;
 	public $view;
+	public $vlr_cont;
 
 	/**
 	 * @return string the associated database table name
@@ -55,14 +55,14 @@ class Cont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Vlr_Contrato, Area, Observaciones, Periodicidad, Dias_Alerta, Contacto, Telefono_Contacto, Email_Contacto, Estado', 'required'),
-			array('Empresa, Vlr_Contrato, Periodicidad, Dias_Alerta, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
+			array('Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Area, Observaciones, Periodicidad, Dias_Alerta, Contacto, Telefono_Contacto, Email_Contacto, Estado', 'required'),
+			array('Empresa, Periodicidad, Dias_Alerta, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Proveedor, Area, Contacto, Telefono_Contacto, Email_Contacto', 'length', 'max'=>100),
 			array('Concepto_Contrato', 'length', 'max'=>200),
 			array('Email_Contacto','email', 'message'=>'E-mail no valido'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('Id_Contrato, Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Vlr_Contrato, Area, Observaciones, Periodicidad, Dias_Alerta, Contacto, Telefono_Contacto, Email_Contacto, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion, usuario_creacion, usuario_actualizacion, orderby, view', 'safe', 'on'=>'search'),
+			array('Id_Contrato, Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Area, Observaciones, Periodicidad, Dias_Alerta, Contacto, Telefono_Contacto, Email_Contacto, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion, usuario_creacion, usuario_actualizacion, orderby, view', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -73,6 +73,42 @@ class Cont extends CActiveRecord
 		$desc_contrato = $modelo_cont->Id_Contrato.' / '.$modelo_cont->Proveedor.' - '.$modelo_cont->Concepto_Contrato;
 		
 		return $desc_contrato;
+
+ 	}
+
+ 	public function VlrCont($Id_Contrato) {
+
+		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Moneda FROM TH_ITEM_CONT WHERE Id_Contrato = ".$Id_Contrato." AND Estado = 1 ORDER BY Moneda")->queryAll();
+
+		$array_total_x_moneda = array();
+
+		foreach ($modelo_items_cont as $reg) {
+			
+			$Moneda =$reg['Moneda'];
+			$array_total_x_moneda[$Moneda] = 0; 	
+		}
+		
+		foreach ($modelo_items_cont as $reg) {
+
+			$Cant =$reg['Cant'];
+			$Vlr_Unit =$reg['Vlr_Unit'];
+			$Vlr_Total = $Vlr_Unit * $Cant;
+			$Moneda =$reg['Moneda'];
+
+			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
+			
+		}
+
+		$cadena_total = "";
+
+		foreach ($array_total_x_moneda as $id_moneda => $valor) {
+			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
+			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
+		}
+
+		$resp = substr ($cadena_total, 0, -2);
+
+		return $resp;
 
  	}
 
@@ -104,7 +140,6 @@ class Cont extends CActiveRecord
 			'Fecha_Inicial' => 'Fecha de inicio',
 			'Fecha_Final' => 'Fecha de fin.',
 			'Fecha_Ren_Can' => 'Fecha de ren. / canc.',
-			'Vlr_Contrato' => 'Valor',
 			'Area' => 'Área',
 			'Observaciones' => 'Observaciones',
 			'Periodicidad' => 'Periodicidad de pago',
@@ -121,6 +156,7 @@ class Cont extends CActiveRecord
 			'usuario_actualizacion' => 'Usuario que actualizó',
 			'orderby' => 'Orden de resultados',
 			'view'=>'Ver',
+			'vlr_cont'=>'Valor',
 		);
 	}
 

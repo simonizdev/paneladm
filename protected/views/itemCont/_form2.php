@@ -19,15 +19,14 @@
 <div class="row">
   	<div class="col-sm-4">
         <div class="form-group">
-          	<?php echo $form->error($model,'Id_Contrato', array('class' => 'pull-right badge bg-red')); ?>
-			<?php echo $form->label($model,'Id_Contrato'); ?>
-			<?php echo $form->hiddenField($model,'Id_Contrato', array('class' => 'form-control', 'value' => $c)); ?>
-			<?php  
-				$mc = new Cont;
-				$desc_cont = $mc->Desccontrato($c);
-				echo '<p>'.$desc_cont.'</p>';
-			?>    
-                
+        	<?php echo $form->error($model,'Id_Contrato', array('class' => 'pull-right badge bg-red')); ?>
+    			<?php echo $form->label($model,'Id_Contrato'); ?>
+    			<?php echo $form->hiddenField($model,'Id_Contrato', array('class' => 'form-control', 'value' => $c)); ?>
+    			<?php  
+    				$mc = new Cont;
+    				$desc_cont = $mc->Desccontrato($c);
+    				echo '<p>'.$desc_cont.'</p>';
+    			?>             
         </div>
     </div>
     <div class="col-sm-4">
@@ -46,7 +45,6 @@
   	</div>
 </div>
 <div class="row">
-	  
   	<div class="col-sm-4">
     	<div class="form-group">
     		<?php echo $form->error($model,'Cant', array('class' => 'pull-right badge bg-red')); ?>
@@ -63,15 +61,15 @@
     </div>
     <div class="col-sm-4">
         <div class="form-group">
-          <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
-          <?php echo $form->label($model,'Estado'); ?>
+          <?php echo $form->error($model,'Moneda', array('class' => 'pull-right badge bg-red')); ?>
+          <?php echo $form->label($model,'Moneda'); ?>
           <?php $estados = Yii::app()->params->estados; ?>
           <?php
               $this->widget('ext.select2.ESelect2',array(
-                  'name'=>'ItemCont[Estado]',
-                  'id'=>'ItemCont_Estado',
-                  'data'=>$estados,
-                  'value' => $model->Estado,
+                  'name'=>'ItemCont[Moneda]',
+                  'id'=>'ItemCont_Moneda',
+                  'data'=>$lista_monedas,
+                  'value' => $model->Moneda,
                   'htmlOptions'=>array(),
                   'options'=>array(
                       'placeholder'=>'Seleccione...',
@@ -84,13 +82,34 @@
     </div>
 </div>
 <div class="row">
-  <div class="col-sm-12">
+  <div class="col-sm-8">
     <div class="form-group">
           <?php echo $form->error($model,'Descripcion', array('class' => 'pull-right badge bg-red')); ?>
           <?php echo $form->label($model,'Descripcion'); ?>
           <?php echo $form->textArea($model,'Descripcion',array('class' => 'form-control', 'rows'=>3, 'cols'=>50, 'onkeyup' => 'convert_may(this)')); ?>
     </div>
-  </div>    
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+        <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'Estado'); ?>
+        <?php $estados = Yii::app()->params->estados; ?>
+        <?php
+            $this->widget('ext.select2.ESelect2',array(
+                'name'=>'ItemCont[Estado]',
+                'id'=>'ItemCont_Estado',
+                'data'=>$estados,
+                'value' => $model->Estado,
+                'htmlOptions'=>array(),
+                'options'=>array(
+                    'placeholder'=>'Seleccione...',
+                    'width'=> '100%',
+                    'allowClear'=>true,
+                ),
+            ));
+        ?>
+      </div>
+  </div>   
 </div>	
 
 

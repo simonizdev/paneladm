@@ -47,29 +47,33 @@
 	</div>
 
   	<div class="col-sm-8">
-      	<div class="form-group">
-  			<?php echo $form->error($model,'Items', array('class' => 'pull-right badge bg-red')); ?>
-			<?php echo $form->label($model,'Items'); ?>
-			<?php
-			  $this->widget('ext.select2.ESelect2',array(
-			      'name'=>'FactItemCont[Items]',
-			      'id'=>'FactItemCont_Items',
-			      'data'=>$lista_items,
-			      'htmlOptions'=>array(
-			        'multiple'=>'multiple',
-			      ),
-			      'options'=>array(
-			          'placeholder'=>'Seleccione...',
-			          'width'=> '100%',
-			          'allowClear'=>true,
-			      ),
-			  ));
-			?>
+      <div class="form-group">
+  		   <?php echo $form->error($model,'Items', array('class' => 'pull-right badge bg-red')); ?>
+			   <?php echo $form->label($model,'Items'); ?>
+  			 <?php
+  			  $this->widget('ext.select2.ESelect2',array(
+  			      'name'=>'FactItemCont[Items]',
+  			      'id'=>'FactItemCont_Items',
+  			      'data'=>$lista_items,
+  			      'htmlOptions'=>array(
+  			        'multiple'=>'multiple',
+  			      ),
+  			      'options'=>array(
+  			          'placeholder'=>'Seleccione...',
+  			          'width'=> '100%',
+  			          'allowClear'=>true,
+  			      ),
+  			  ));
+  			?>
       	</div>
   	</div>
 </div>
 <div class="row">
-	<div class="col-sm-4">
+  <div class="col-sm-4">
+    <?php echo $form->label($model,'vlr_total'); ?>
+    <?php echo '<p id="vlr_total">-</p>'; ?>
+  </div>
+  <div class="col-sm-4">
         <div class="form-group">
             <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
             <?php echo $form->label($model,'Estado'); ?>
@@ -106,28 +110,50 @@
 $(function() {
 
 	$("#valida_form").click(function() {
-      var form = $("#fact-item-cont-form");
-      var settings = form.data('settings') ;
+    var form = $("#fact-item-cont-form");
+    var settings = form.data('settings') ;
 
-      settings.submitting = true ;
-      $.fn.yiiactiveform.validate(form, function(messages) {
-          if($.isEmptyObject(messages)) {
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              	
-              $('#buttons').hide();
-              form.submit();
-              
-          } else {
-              settings = form.data('settings'),
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              settings.submitting = false ;
-          }
-      });
-  	});
+    settings.submitting = true ;
+    $.fn.yiiactiveform.validate(form, function(messages) {
+        if($.isEmptyObject(messages)) {
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            	
+            $('#buttons').hide();
+            form.submit();
+            
+        } else {
+            settings = form.data('settings'),
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            settings.submitting = false ;
+        }
+    });
+	});
+
+});
+
+$("#FactItemCont_Items").change(function() {
+  var items = $(this).val();
+  //alert(items);
+
+  if(items != ""){
+      
+    var data = {items: items}
+    $.ajax({ 
+        type: "POST", 
+        url: "<?php echo Yii::app()->createUrl('factItemCont/totalitems'); ?>",
+        data: data,
+        success: function(response){
+           $('#vlr_total').text(response);
+        }
+    });
+
+  }else{
+    $('#vlr_total').text('-');
+  }
 
 });
 

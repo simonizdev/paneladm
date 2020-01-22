@@ -22,6 +22,9 @@
  */
 class FactItemCont extends CActiveRecord
 {
+	
+	public $vlr_total;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -39,6 +42,7 @@ class FactItemCont extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('Id_Contrato, Items, Numero_Factura, Fecha_Factura, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
+			array('Id_Contrato, Numero_Factura', 'ECompositeUniqueValidator', 'attributesToAddError'=>'Numero_Factura','message'=>'Esta factura ya fue asociada a este contrato.'),
 			array('Id_Contrato, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Numero_Factura', 'length', 'max'=>50),
 			// The following rule is used by search().
@@ -55,6 +59,42 @@ class FactItemCont extends CActiveRecord
 		    case 1:
 		        return "RECIBIDA";
 		}
+
+ 	}
+
+ 	public function TotalItems($items) {
+
+		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
+
+		$array_total_x_moneda = array();
+
+		foreach ($modelo_items_cont as $reg) {
+			
+			$Moneda =$reg['Moneda'];
+			$array_total_x_moneda[$Moneda] = 0; 	
+		}
+		
+		foreach ($modelo_items_cont as $reg) {
+
+			$Cant =$reg['Cant'];
+			$Vlr_Unit =$reg['Vlr_Unit'];
+			$Vlr_Total = $Vlr_Unit * $Cant;
+			$Moneda =$reg['Moneda'];
+
+			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
+			
+		}
+
+		$cadena_total = "";
+
+		foreach ($array_total_x_moneda as $id_moneda => $valor) {
+			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
+			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
+		}
+
+		$resp = substr ($cadena_total, 0, -2);
+
+		return $resp;
 
  	}
 
@@ -98,6 +138,7 @@ class FactItemCont extends CActiveRecord
 			'Id_Usuario_Actualizacion' => 'Usuario que actualizó',
 			'Fecha_Creacion' => 'Fecha de creación',
 			'Fecha_Actualizacion' => 'Fecha de actualización',
+			'vlr_total' => 'Vlr. total',
 		);
 	}
 

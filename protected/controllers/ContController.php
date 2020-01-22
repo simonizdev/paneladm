@@ -59,6 +59,11 @@ class ContController extends Controller
 			$asociacion = 0;
 		}
 
+		//negociaciones asociadas a contrato
+		$neg=new NegCont('search');
+		$neg->unsetAttributes();  // clear any default values
+		$neg->Id_Contrato = $id;
+
 		//anexos asociados a contrato
 		$anexos=new AnexoCont('search');
 		$anexos->unsetAttributes();  // clear any default values
@@ -77,6 +82,7 @@ class ContController extends Controller
 		$this->render('view',array(
 			'model'=>$model,
 			'asociacion'=> $asociacion,
+			'neg'=> $neg,
 			'anexos'=> $anexos,
 			'items'=> $items,
 			'facturas'=> $facturas,

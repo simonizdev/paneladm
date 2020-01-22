@@ -1,35 +1,41 @@
 <?php
-/* @var $this FactItemContController */
-/* @var $model FactItemCont */
+/* @var $this NegContController */
+/* @var $model NegCont */
 
 ?>
 
-<h3>Visualizando factura de contrato</h3>
+<h3>Visualizando negociación de contrato</h3>
 
 <div class="table-responsive">
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'Id_Fac',
+		'Id_Neg',
 		array(
             'name'=>'Id_Contrato',
             'value'=>$model->DescContrato($model->Id_Contrato),
         ),
-		'Numero_Factura',
+		'Item',
 		array(
-            'name'=>'Fecha_Factura',
-            'value'=>UtilidadesVarias::textofechahora($model->Fecha_Factura),
+            'name'=>'Costo',
+            'value'=>number_format($model->Costo, 0),
         ),
-        'Items',
-        array(
-            'name' => 'vlr_total',
-            'value' => $model->TotalItems($model->Items),
-            'htmlOptions'=>array('style' => 'text-align: right;'),
+		array(
+		    'name' => 'Moneda',
+		    'value' => $model->moneda->Dominio,
+		),
+		array(
+            'name'=>'Porc_Desc',
+            'value'=>number_format($model->Porc_Desc, 2),
         ),
+		array(
+		    'name'=>'costo_final',
+		    'value' => $model->CostoFinal($model->Id_Neg),
+		),
 		array(
             'name' => 'Estado',
-            'value' => $model->DescEstado($model->Estado),
+            'value' => UtilidadesVarias::textoestado1($model->Estado),
         ),
 		array(
             'name'=>'Id_Usuario_Creacion',
