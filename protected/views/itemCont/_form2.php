@@ -82,6 +82,13 @@
     </div>
 </div>
 <div class="row">
+  <div class="col-sm-4">
+    <div class="form-group">
+        <?php echo $form->error($model,'Iva', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'Iva'); ?>
+        <?php echo $form->numberField($model,'Iva', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number', 'min' => 0, 'max' => 100)); ?>
+    </div>
+  </div> 
   <div class="col-sm-8">
     <div class="form-group">
           <?php echo $form->error($model,'Descripcion', array('class' => 'pull-right badge bg-red')); ?>
@@ -89,6 +96,8 @@
           <?php echo $form->textArea($model,'Descripcion',array('class' => 'form-control', 'rows'=>3, 'cols'=>50, 'onkeyup' => 'convert_may(this)')); ?>
     </div>
   </div>
+</div>
+<div class="row">
   <div class="col-sm-4">
       <div class="form-group">
         <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>

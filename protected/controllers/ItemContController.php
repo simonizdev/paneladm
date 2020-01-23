@@ -118,6 +118,7 @@ class ItemContController extends Controller
 		$cant_act = $model->Cant;
 		$vlr_unit_act = $model->Vlr_Unit;
 		$moneda_act = $model->Moneda;
+		$iva_act = $model->Iva;
 		$estado_act = $model->Estado;
 
 		// Uncomment the following line if AJAX validation is needed
@@ -145,6 +146,8 @@ class ItemContController extends Controller
 					$model->Vlr_Unit,
 					$moneda_act,
 					$model->Moneda,
+					$iva_act,
+					$model->Iva,
 					$estado_act, 
 					$model->Estado,
 				);

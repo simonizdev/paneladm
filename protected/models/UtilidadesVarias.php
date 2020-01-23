@@ -232,7 +232,7 @@ class UtilidadesVarias {
 		return $modeloequipo->tipoequipo->Dominio.' / '.$modeloequipo->Serial;
 	}
 
-	public static function novedaditem($id, $id_item_act, $id_item_nue, $item_act, $item_nue, $descripcion_act, $descripcion_nue, $cant_act, $cant_nue, $vlr_unit_act, $vlr_unit_nue, $moneda_act, $moneda_nue, $estado_act, $estado_nue){
+	public static function novedaditem($id, $id_item_act, $id_item_nue, $item_act, $item_nue, $descripcion_act, $descripcion_nue, $cant_act, $cant_nue, $vlr_unit_act, $vlr_unit_nue, $moneda_act, $moneda_nue, $iva_act, $iva_nue, $estado_act, $estado_nue){
 
 		$texto_novedad = "";
 		$flag = 0;
@@ -274,6 +274,12 @@ class UtilidadesVarias {
 			$n_moneda_nue = Dominio::model()->findByPk($moneda_nue);
 
 			$texto_novedad .= "Moneda: ".$n_moneda_act->Dominio." / ".$n_moneda_nue->Dominio.", ";
+		}
+
+		if($iva_act != $iva_nue){
+			$flag = 1;
+
+			$texto_novedad .= "Iva: ".$iva_act." / ".$iva_nue.", ";
 		}
 
 		if($estado_act != $estado_nue){

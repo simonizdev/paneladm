@@ -302,16 +302,21 @@
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
                     array(
+                        'name' => 'Moneda',
+                        'value' => '$data->moneda->Dominio',
+                    ),
+                    array(
+                        'name'=>'Iva',
+                        'htmlOptions'=>array('style' => 'text-align: right;'),
+                    ),
+                    array(
                         'name'=>'vlr_total',
                         'value'=>function($data){
                             return number_format($data->VlrTotalItem($data->Id_Item), 0);
                         },
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
-                    array(
-                        'name' => 'Moneda',
-                        'value' => '$data->moneda->Dominio',
-                    ),
+                    
                     array(
                         'name'=>'Estado',
                         'value'=>'UtilidadesVarias::textoestado1($data->Estado)',

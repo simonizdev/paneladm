@@ -10,8 +10,9 @@
  * @property string $Item
  * @property string $Descripcion
  * @property integer $Cant
- * @property integer $Moneda
  * @property integer $Vlr_Unit
+ * @property integer $Moneda
+ * @property integer $Iva
  * @property integer $Estado
  * @property integer $Id_Usuario_Creacion
  * @property string $Fecha_Creacion
@@ -44,7 +45,7 @@ class ItemCont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Id_Contrato, Id, Item, Descripcion, Cant, Moneda, Vlr_Unit, Estado', 'required'),
+			array('Id_Contrato, Id, Item, Descripcion, Cant, Moneda, Vlr_Unit, Iva, Estado', 'required'),
 			array('Id_Contrato, Cant, Moneda, Vlr_Unit, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Id, Item', 'length', 'max'=>200),
 			// The following rule is used by search().
@@ -67,7 +68,20 @@ class ItemCont extends CActiveRecord
 
 		$modelo_item_cont = ItemCont::model()->findByPk($Id_Item);
 
-		$vlr_total_item = $modelo_item_cont->Vlr_Unit * $modelo_item_cont->Cant;
+		$Iva = $modelo_item_cont->Iva;
+
+		if($Iva == 0){
+
+			$vlr_total_item = $modelo_item_cont->Vlr_Unit * $modelo_item_cont->Cant;
+
+
+		}else{
+
+			$vlr_base = $modelo_item_cont->Vlr_Unit * $modelo_item_cont->Cant;
+			$vlr_iva = (($vlr_base * $Iva) / 100);
+			$vlr_total_item = $vlr_base + $vlr_iva;
+
+		}
 		
 		return $vlr_total_item;
 
@@ -107,8 +121,9 @@ class ItemCont extends CActiveRecord
 			'Item' => 'Item',
 			'Descripcion' => 'Descripción',
 			'Cant' => 'Cant.',
-			'Moneda' => 'Moneda',
 			'Vlr_Unit' => 'Vlr. unit.',
+			'Moneda' => 'Moneda',
+			'Iva' => 'Iva',
 			'Estado' => 'Estado',
 			'Id_Usuario_Creacion' => 'Usuario que creo',
 			'Id_Usuario_Actualizacion' => 'Usuario que actualizó',
@@ -142,8 +157,9 @@ class ItemCont extends CActiveRecord
 		$criteria->compare('t.Item',$this->Item,true);
 		$criteria->compare('t.Descripcion',$this->Descripcion,true);
 		$criteria->compare('t.Cant',$this->Cant);
-		$criteria->compare('t.Moneda',$this->Moneda);
 		$criteria->compare('t.Vlr_Unit',$this->Vlr_Unit);
+		$criteria->compare('t.Moneda',$this->Moneda);
+		$criteria->compare('t.Iva',$this->Iva);
 		$criteria->compare('t.Estado',$this->Estado);
 		$criteria->compare('t.Id_Usuario_Creacion',$this->Id_Usuario_Creacion);
 		$criteria->compare('t.Fecha_Creacion',$this->Fecha_Creacion,true);

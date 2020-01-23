@@ -201,7 +201,7 @@ class FactItemContController extends Controller
 	{
 		$items = implode(",", $_POST['items']);
 
-		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
+		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Iva, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
 
 		$array_total_x_moneda = array();
 
@@ -215,7 +215,20 @@ class FactItemContController extends Controller
 
 			$Cant =$reg['Cant'];
 			$Vlr_Unit =$reg['Vlr_Unit'];
-			$Vlr_Total = $Vlr_Unit * $Cant;
+			$Iva =$reg['Iva'];
+
+			if($Iva == 0){
+
+				$Vlr_Total = $Vlr_Unit * $Cant;
+
+			}else{
+
+				$vlr_base = $Vlr_Unit * $Cant;
+				$vlr_iva = (($vlr_base * $Iva) / 100);
+				$Vlr_Total = $vlr_base + $vlr_iva;
+
+			}
+
 			$Moneda =$reg['Moneda'];
 
 			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 

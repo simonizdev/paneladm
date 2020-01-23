@@ -78,35 +78,54 @@ class Cont extends CActiveRecord
 
  	public function VlrCont($Id_Contrato) {
 
-		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Moneda FROM TH_ITEM_CONT WHERE Id_Contrato = ".$Id_Contrato." AND Estado = 1 ORDER BY Moneda")->queryAll();
+		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Iva, Moneda FROM TH_ITEM_CONT WHERE Id_Contrato = ".$Id_Contrato." AND Estado = 1 ORDER BY Moneda")->queryAll();
 
 		$array_total_x_moneda = array();
 
-		foreach ($modelo_items_cont as $reg) {
+		if(!empty($modelo_items_cont)){
+
+			foreach ($modelo_items_cont as $reg) {
+				
+				$Moneda =$reg['Moneda'];
+				$array_total_x_moneda[$Moneda] = 0; 	
+			}
 			
-			$Moneda =$reg['Moneda'];
-			$array_total_x_moneda[$Moneda] = 0; 	
+			foreach ($modelo_items_cont as $reg) {
+
+				$Cant =$reg['Cant'];
+				$Vlr_Unit =$reg['Vlr_Unit'];
+				
+				$Iva =$reg['Iva'];
+
+				if($Iva == 0){
+
+					$Vlr_Total = $Vlr_Unit * $Cant;
+
+				}else{
+
+					$vlr_base = $Vlr_Unit * $Cant;
+					$vlr_iva = (($vlr_base * $Iva) / 100);
+					$Vlr_Total = $vlr_base + $vlr_iva;
+
+				}
+
+				$Moneda =$reg['Moneda'];
+
+				$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
+				
+			}
+
+			$cadena_total = "";
+
+			foreach ($array_total_x_moneda as $id_moneda => $valor) {
+				$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
+				$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
+			}
+
+			$resp = substr ($cadena_total, 0, -2);
+		}else{
+			$resp = "-";
 		}
-		
-		foreach ($modelo_items_cont as $reg) {
-
-			$Cant =$reg['Cant'];
-			$Vlr_Unit =$reg['Vlr_Unit'];
-			$Vlr_Total = $Vlr_Unit * $Cant;
-			$Moneda =$reg['Moneda'];
-
-			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
-			
-		}
-
-		$cadena_total = "";
-
-		foreach ($array_total_x_moneda as $id_moneda => $valor) {
-			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
-			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
-		}
-
-		$resp = substr ($cadena_total, 0, -2);
 
 		return $resp;
 
