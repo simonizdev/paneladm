@@ -16,6 +16,7 @@ class Reporte extends CFormModel
     public $clasif;
 
     public function rules() {
+        
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
@@ -24,7 +25,8 @@ class Reporte extends CFormModel
             array('opcion_exp', 'required','on'=>'lic_disp'),
             array('tipo_lic, opcion_exp', 'required','on'=>'lic_equipos'),
             array('opc', 'required','on'=>'zip_e'), 
-            array('opc', 'required','on'=>'zip_l'),                 
+            array('opc', 'required','on'=>'zip_l'),
+            array('opcion_exp', 'required','on'=>'lic_venc'),                 
         );  
     }
 

@@ -32,11 +32,7 @@ class FactItemContController extends Controller
 				'users'=>array('@'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','totalitems'),
-				'users'=>array('@'),
-			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
+				'actions'=>array('create','existfact','infoitem','anul'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -51,8 +47,17 @@ class FactItemContController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$model = $this->loadModel($id);
+
+		//detalle 
+		$detalle=new DetFactItemCont('search');
+		$detalle->unsetAttributes();  // clear any default values
+		$detalle->Id_Fac = $model->Id_Fac;
+
+
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$model,
+			'detalle'=>$detalle,
 		));
 	}
 
@@ -66,20 +71,89 @@ class FactItemContController extends Controller
 
 		$items=ItemCont::model()->findAll(array('order'=>'Item', 'condition'=>'Id_Contrato = '.$c.' AND Estado = 1'));
 
+		$user = Yii::app()->user->getState('id_user');
+
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['FactItemCont']))
 		{
+			//print_r($_POST['FactItemCont']);die;
 			$model->attributes=$_POST['FactItemCont'];
-			$model->Id_Contrato = $c;
-			$model->Items = implode(',',$_POST['FactItemCont']['Items']);
-			$model->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
-			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+			$model->Numero_Factura = $_POST['FactItemCont']['Numero_Factura'];
+			$model->Fecha_Factura = $_POST['FactItemCont']['Fecha_Factura'];
+			$model->Tasa_Cambio = $_POST['FactItemCont']['Tasa_Cambio'];
+			$model->Id_Usuario_Creacion = $user;
+			$model->Id_Usuario_Actualizacion = $user;
 			$model->Fecha_Creacion = date('Y-m-d H:i:s');
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
+			$model->Estado = 1;
 
 			if($model->save()){
+
+				$array_item = explode(",", $_POST['FactItemCont']['cad_item']);
+				$array_cant = explode(",", $_POST['FactItemCont']['cad_cant']);
+				$array_vlr_u = explode(",", $_POST['FactItemCont']['cad_vlr_u']);
+				$array_iva = explode(",", $_POST['FactItemCont']['cad_iva']);
+
+				$num_reg = count($array_item);
+
+				for ($i = 0; $i < $num_reg; $i++) {
+
+					$modelo_item_cont = ItemCont::model()->findByPk($array_item[$i]);
+					$cant_act = $modelo_item_cont->Cant;
+					$vlr_u_act = $modelo_item_cont->Vlr_Unit;
+					$iva_act = $modelo_item_cont->Iva;
+
+					$cant_nue = $array_cant[$i];
+					$vlr_u_nue = $array_vlr_u[$i];
+					$iva_nue = $array_iva[$i];
+
+					if($cant_act != $cant_nue || $vlr_u_act != $vlr_u_nue || $iva_act != $iva_nue){
+
+						$texto_novedad = "";
+
+						if($cant_act != $cant_nue){
+							$texto_novedad .= "Cant.: ".$cant_act." / ".$cant_nue.", ";
+							$modelo_item_cont->Cant = $cant_nue;
+						}
+
+						if($vlr_u_act != $vlr_u_nue){
+							$texto_novedad .= "Vlr. unit.: ".number_format($vlr_u_act, 0)." / ".number_format($vlr_u_nue, 0).", ";
+							$modelo_item_cont->Vlr_Unit = $vlr_u_nue;
+						}
+
+						if($iva_act != $iva_nue){
+							$texto_novedad .= "Iva: ".$iva_act." / ".$iva_nue.", ";
+							$modelo_item_cont->Iva = $iva_nue;
+						}
+
+						$modelo_item_cont->Id_Usuario_Actualizacion = $user;
+						$modelo_item_cont->Fecha_Actualizacion = date('Y-m-d H:i:s');
+
+						if($modelo_item_cont->save()){
+							$texto_novedad = substr ($texto_novedad, 0, -2);
+							$nueva_novedad = new HistItemCont;
+							$nueva_novedad->Id_Item = $array_item[$i];
+							$nueva_novedad->Novedad = $texto_novedad;
+							$nueva_novedad->Id_Usuario_Creacion = $user;
+							$nueva_novedad->Fecha_Creacion = date('Y-m-d H:i:s');
+							$nueva_novedad->save();	
+						}
+
+					}
+
+			 		$nuevo_det_fact_item = new DetFactItemCont;
+					$nuevo_det_fact_item->Id_Fac = $model->Id_Fac;
+					$nuevo_det_fact_item->Id_Item = $array_item[$i];
+					$nuevo_det_fact_item->Cant = $array_cant[$i];
+					$nuevo_det_fact_item->Vlr_Unit = $array_vlr_u[$i];
+					$nuevo_det_fact_item->Iva = $array_iva[$i];
+					$nuevo_det_fact_item->Id_Usuario_Creacion = $user;
+					$nuevo_det_fact_item->Fecha_Creacion = date('Y-m-d H:i:s');
+					$nuevo_det_fact_item->save();
+				}
+
             	Yii::app()->user->setFlash('success', "Se asocio la factura (".$model->Numero_Factura.") correctamente.");
 				$this->redirect(array('cont/view','id'=>$c));
 			}
@@ -92,55 +166,21 @@ class FactItemContController extends Controller
 		));
 	}
 
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUpdate($id)
+	public function actionAnul($id)
 	{
-		$model=$this->loadModel($id);
+		$model = $this->loadModel($id);
+		$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+		$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
+		$model->Estado = 0;
 
-		$items=ItemCont::model()->findAll(array('order'=>'Item', 'condition'=>'Id_Contrato = '.$model->Id_Contrato.' AND Estado = 1'));
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['FactItemCont']))
-		{
-			$model->attributes=$_POST['FactItemCont'];
-			$model->Items = implode(',',$_POST['FactItemCont']['Items']);
-			$model->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
-			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
-			$model->Fecha_Creacion = date('Y-m-d H:i:s');
-			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
-
-			if($model->save()){
-            	Yii::app()->user->setFlash('success', "Se actualizo la factura (".$model->Numero_Factura.") correctamente.");
-				$this->redirect(array('cont/view','id'=>$model->Id_Contrato));
-			}
+		if($model->save()){
+			Yii::app()->user->setFlash('success', "Se anulo la factura (".$model->Numero_Factura.") correctamente.");
+			$this->redirect(array('cont/view','id'=>$model->Id_Contrato));	
+		}else{
+			Yii::app()->user->setFlash('warning', "No se pudo anular la factura (".$model->Numero_Factura.").");
+			$this->redirect(array('cont/view','id'=>$model->Id_Contrato));
 		}
 
-		$this->render('update',array(
-			'model'=>$model,
-			'c'=>$model->Id_Contrato,
-			'items'=>$items,
-
-		));
-	}
-
-	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
-	 */
-	public function actionDelete($id)
-	{
-		$this->loadModel($id)->delete();
-
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
 	/**
@@ -151,21 +191,6 @@ class FactItemContController extends Controller
 		$dataProvider=new CActiveDataProvider('FactItemCont');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-		$model=new FactItemCont('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['FactItemCont']))
-			$model->attributes=$_GET['FactItemCont'];
-
-		$this->render('admin',array(
-			'model'=>$model,
 		));
 	}
 
@@ -197,53 +222,51 @@ class FactItemContController extends Controller
 		}
 	}
 
-	public function actionTotalItems()
+
+	public function actionExistFact()
 	{
-		$items = implode(",", $_POST['items']);
+		$id_contrato = $_POST['id_contrato'];
+		$n_factura = $_POST['n_factura'];
+		$id_fact = $_POST['id_fact'];
 
-		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Iva, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
-
-		$array_total_x_moneda = array();
-
-		foreach ($modelo_items_cont as $reg) {
-			
-			$Moneda =$reg['Moneda'];
-			$array_total_x_moneda[$Moneda] = 0; 	
-		}
-		
-		foreach ($modelo_items_cont as $reg) {
-
-			$Cant =$reg['Cant'];
-			$Vlr_Unit =$reg['Vlr_Unit'];
-			$Iva =$reg['Iva'];
-
-			if($Iva == 0){
-
-				$Vlr_Total = $Vlr_Unit * $Cant;
-
-			}else{
-
-				$vlr_base = $Vlr_Unit * $Cant;
-				$vlr_iva = (($vlr_base * $Iva) / 100);
-				$Vlr_Total = $vlr_base + $vlr_iva;
-
-			}
-
-			$Moneda =$reg['Moneda'];
-
-			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
-			
+		if($id_fact == 0){
+			$modelo_fact=FactItemCont::model()->find(array('condition'=>"Id_Contrato = ".$id_contrato." AND Numero_Factura = '".$n_factura."' AND Estado = 1"));
+		}else{
+			$modelo_fact=FactItemCont::model()->find(array('condition'=>"Id_Contrato = ".$id_contrato." AND Numero_Factura = '".$n_factura."' AND Id_Fac != ".$id_fact." AND Estado = 1"));
 		}
 
-		$cadena_total = "";
-
-		foreach ($array_total_x_moneda as $id_moneda => $valor) {
-			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
-			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
+		if(empty($modelo_fact)){
+			echo 1;
+		}else{
+			echo 0;
 		}
+	}
 
-		$resp = substr ($cadena_total, 0, -2);
+	public function actionInfoItem()
+	{
+		$item = $_POST['item'];
 
-		echo $resp;
+		$array_info = array();
+
+		$modelo_item_cont = ItemCont::model()->findByPk($item);
+
+		$desc_item = $modelo_item_cont->Id.' - '.$modelo_item_cont->Item;
+		$cant = $modelo_item_cont->Cant;
+		$vlr_unit = $modelo_item_cont->Vlr_Unit;
+		$iva = $modelo_item_cont->Iva;
+		$id_moneda = $modelo_item_cont->Moneda;
+		$moneda = $modelo_item_cont->moneda->Dominio;
+
+		$array_info['item'] = $item;
+		$array_info['desc_item'] = $desc_item;
+		$array_info['cant'] = $cant;
+		$array_info['vlr_unit'] = $vlr_unit;
+		$array_info['iva'] = $iva;
+		$array_info['moneda'] = $moneda;
+
+		$resp = array('item' => intval($item), 'desc_item' => $desc_item, 'cant' => intval($cant), 'vlr_unit' => intval($vlr_unit), 'iva' => intval($iva), 'id_moneda' => intval($id_moneda), 'moneda' => $moneda);
+
+	    echo json_encode($resp);
+
 	}
 }

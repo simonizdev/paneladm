@@ -235,7 +235,7 @@ class UtilidadesMenu {
 		        $criteria1->order= 'orden';
 		        $hijos1=Menu::model()->findAll($criteria1);
 		        $array_menu2 = array(); 
-		        if (!is_null($hijos1)) {
+		        if(!is_null($hijos1)) {
 		            foreach ($hijos1 as $h1) {
 		                $id2 = $h1->Id_Menu;
 		                $text2 = $h1->Descripcion;

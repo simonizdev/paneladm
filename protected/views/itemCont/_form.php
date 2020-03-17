@@ -97,6 +97,8 @@
             <?php echo $form->textArea($model,'Descripcion',array('class' => 'form-control', 'rows'=>3, 'cols'=>50, 'onkeyup' => 'convert_may(this)')); ?>
       </div>
     </div>
+  </div>
+  <div class="row">   
     <div class="col-sm-4">
         <div class="form-group">
             <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
@@ -134,28 +136,28 @@
 $(function() {
 
 	$("#valida_form").click(function() {
-      var form = $("#item-cont-form");
-      var settings = form.data('settings') ;
+    var form = $("#item-cont-form");
+    var settings = form.data('settings') ;
 
-      settings.submitting = true ;
-      $.fn.yiiactiveform.validate(form, function(messages) {
-          if($.isEmptyObject(messages)) {
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              	
-              $('#buttons').hide();
-              form.submit();
-              
-          } else {
-              settings = form.data('settings'),
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              settings.submitting = false ;
-          }
-      });
-  	});
+    settings.submitting = true ;
+    $.fn.yiiactiveform.validate(form, function(messages) {
+        if($.isEmptyObject(messages)) {
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            	
+            $('#buttons').hide();
+            form.submit();
+            
+        } else {
+            settings = form.data('settings'),
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            settings.submitting = false ;
+        }
+    });
+	});
 
 });
 

@@ -124,6 +124,125 @@ class UtilidadesReportes {
     return $tabla;
   }
 
+  public static function licvencpantalla($empresa_compra, $clasif) {
+    
+    //se arma el arreglo con los datos para el reporte
+
+    $condicion = "";
+
+    if($empresa_compra != ""){
+      $a_emp = $empresa_compra;
+      $condicion .= " AND L.Empresa_Compra IN (".$a_emp.")";
+    }
+
+    if($clasif != ""){
+      $condicion .= " AND L.Clasificacion = ".$clasif;
+    }
+
+    $query = "
+      SELECT 
+      L.Id_Lic,
+      E.Descripcion AS Empresa_Compra,
+      C.Dominio AS Clasif, 
+      T.Dominio AS Tipo, 
+      V.Dominio AS Vers, 
+      P.Dominio AS Prod, 
+      L.Num_Licencia,
+      U.Dominio AS Ubic,
+      L.Numero_Factura,
+      L.Fecha_Inicio,
+      L.Fecha_Final
+      FROM TH_LICENCIA L
+      LEFT JOIN TH_EMPRESA E ON L.Empresa_Compra = E.Id_Empresa 
+      LEFT JOIN TH_DOMINIO C ON L.Clasificacion = C.Id_Dominio
+      LEFT JOIN TH_DOMINIO T ON L.Tipo = T.Id_Dominio 
+      LEFT JOIN TH_DOMINIO V ON L.Version = V.Id_Dominio 
+      LEFT JOIN TH_DOMINIO P ON L.Producto = P.Id_Dominio
+      LEFT JOIN TH_DOMINIO U ON L.Ubicacion = U.Id_Dominio
+      WHERE L.Fecha_Final IS NOT NULL AND DATEDIFF(day,'".date('Y-m-d')."',L.Fecha_Final) < 90 AND L.Estado = ".Yii::app()->params->estado_lic_act." ".$condicion."
+      ORDER BY 2,3,4,5,6,11
+    ";
+
+    $tabla = '
+    <table class="table table-striped table-hover" style="font-size: 12px !important;">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Empresa que compro</th>
+          <th>Clasif.</th>
+          <th>Tipo</th>
+          <th>Versión</th>
+          <th>Producto</th>
+          <th>N° de licencia</th>
+          <th>Ubicación</th>
+          <th>N° de factura</th>
+          <th>Fecha inicio</th>
+          <th>Fecha fin</th>
+        </tr>
+      </thead>
+      <tbody>
+    ';
+
+    $q_lic = Yii::app()->db->createCommand($query)->queryAll();
+
+    if(!empty($q_lic)){
+
+      $i = 0;
+
+      foreach ($q_lic as $reg1) {
+
+        $Id_Lic         = $reg1 ['Id_Lic']; 
+        $Empresa_Compra = $reg1 ['Empresa_Compra']; 
+        $Clasif         = $reg1 ['Clasif'];
+        $Tipo           = $reg1 ['Tipo'];
+        $Vers           = $reg1 ['Vers'];
+        
+        if($reg1 ['Prod'] != ""){
+          $Prod   = $reg1 ['Prod'];
+        }else{
+          $Prod   = '-';
+        }
+        
+        $Num_Licencia   = $reg1 ['Num_Licencia'];
+        $Ubic           = $reg1 ['Ubic'];
+        $Numero_Factura = $reg1 ['Numero_Factura'];
+        $Fecha_Inicio   = $reg1 ['Fecha_Inicio'];
+        $Fecha_Final    = $reg1 ['Fecha_Final'];
+
+        if ($i % 2 == 0){
+          $clase = 'odd'; 
+        }else{
+          $clase = 'even'; 
+        }
+
+        $tabla .= '    
+        <tr class="'.$clase.'">
+              <td>'.$Id_Lic.'</td>
+              <td>'.$Empresa_Compra.'</td>
+              <td>'.$Clasif.'</td>
+              <td>'.$Tipo.'</td>
+              <td>'.$Vers.'</td>
+              <td>'.$Prod.'</td>
+              <td>'.$Num_Licencia.'</td>
+              <td>'.$Ubic.'</td>
+              <td>'.$Numero_Factura.'</td>
+              <td>'.$Fecha_Inicio.'</td>
+              <td>'.$Fecha_Final.'</td>
+          </tr>';
+
+        $i++; 
+
+      }
+
+    }else{
+
+      $tabla .= ' <tr><td colspan="11" class="empty"><span class="empty">No se encontraron resultados.</span></td></tr>';
+
+    }
+
+    return $tabla;
+  }
+
   public static function licequipospantalla($empresa_compra, $tipo_equipo, $tipo_lic, $version) {
     
     //se arma el arreglo con los datos para el reporte

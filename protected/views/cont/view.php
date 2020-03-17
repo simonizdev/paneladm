@@ -356,10 +356,9 @@
                         'name'=>'Fecha_Factura',
                         'value'=>'UtilidadesVarias::textofecha($data->Fecha_Factura)',
                     ),
-                    'Items',
                     array(
                         'name' => 'vlr_total',
-                        'value' => '$data->TotalItems($data->Items)',
+                        'value' => '$data->TotalItems($data->Id_Fac)',
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
                     array(
@@ -368,7 +367,7 @@
                     ),
                     array(
                         'class'=>'CButtonColumn',
-                        'template'=>'{view}{update}',
+                        'template'=>'{view}{anul}',
                         'buttons'=>array(
                             'view'=>array(
                                 'label'=>'<i class="fa fa-eye actions text-black"></i>',
@@ -376,12 +375,13 @@
                                 'options'=>array('title'=>'Visualizar'),
                                 'url'=>'Yii::app()->createUrl("FactItemCont/view", array("id"=>$data->Id_Fac))',
                             ),
-                            'update'=>array(
-                                'label'=>'<i class="fa fa-pencil actions text-black"></i>',
+                            'anul'=>array(
+                                'label'=>'<i class="fa fa-close actions text-black"></i>',
                                 'imageUrl'=>false,
-                                'options'=>array('title'=>'Actualizar'),
-                                'url'=>'Yii::app()->createUrl("FactItemCont/update", array("id"=>$data->Id_Fac))',
-                                'visible'=> '(Yii::app()->user->getState("permiso_act") == true)',
+                                'options'=>array('title'=>'Anular factura'),
+                                'url'=>'Yii::app()->createUrl("FactItemCont/Anul", array("id"=>$data->Id_Fac))',
+                                'visible'=> '(Yii::app()->user->getState("permiso_act") == true && $data->Estado == 1)',
+                                'options'=>array('title'=>'Anular', 'confirm'=>'Esta seguro de anular esta factura ?'),
                             ),
                         )
                     ),

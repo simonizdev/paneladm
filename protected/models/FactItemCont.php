@@ -6,9 +6,9 @@
  * The followings are the available columns in table 'TH_FACT_ITEM_CONT':
  * @property integer $Id_Fac
  * @property integer $Id_Contrato
- * @property string $Items
  * @property string $Numero_Factura
  * @property string $Fecha_Factura
+ * @property string $Tasa_Cambio
  * @property integer $Estado
  * @property integer $Id_Usuario_Creacion
  * @property string $Fecha_Creacion
@@ -24,6 +24,11 @@ class FactItemCont extends CActiveRecord
 {
 	
 	public $vlr_total;
+	public $item;
+	public $cad_item;
+	public $cad_cant;
+	public $cad_vlr_u;
+	public $cad_iva;
 
 	/**
 	 * @return string the associated database table name
@@ -41,13 +46,13 @@ class FactItemCont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Id_Contrato, Items, Numero_Factura, Fecha_Factura, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
-			array('Id_Contrato, Numero_Factura', 'ECompositeUniqueValidator', 'attributesToAddError'=>'Numero_Factura','message'=>'Esta factura ya fue asociada a este contrato.'),
+			//array('Id_Contrato, Numero_Factura, Fecha_Factura, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
 			array('Id_Contrato, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Numero_Factura', 'length', 'max'=>50),
+			array('Tasa_Cambio', 'length', 'max'=>18),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('Id_Fac, Id_Contrato, Items, Numero_Factura, Fecha_Factura, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
+			array('Id_Fac, Id_Contrato, Numero_Factura, Fecha_Factura, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -62,61 +67,63 @@ class FactItemCont extends CActiveRecord
 
  	}
 
- 	public function TotalItems($items) {
+ 	public function TotalItems($id_fac) {
 
-		$modelo_items_cont= Yii::app()->db->createCommand("SELECT Cant, Vlr_Unit, Iva, Moneda FROM TH_ITEM_CONT WHERE Id_Item IN (".$items.") ORDER BY Moneda")->queryAll();
+ 		$fac=FactItemCont::model()->findByPk($id_fac);
+ 		$det=DetFactItemCont::model()->findAll(array('condition'=>'Id_Fac = '.$id_fac));
 
-		$array_total_x_moneda = array();
+ 		$vlr_t = 0;
 
-		foreach ($modelo_items_cont as $reg) {
-			
-			$Moneda =$reg['Moneda'];
-			$array_total_x_moneda[$Moneda] = 0; 	
-		}
-		
-		foreach ($modelo_items_cont as $reg) {
+ 		foreach ($det as $r) {
+ 			
+ 			$tasa_cambio = $fac->Tasa_Cambio;
+ 			
+ 			$vlr_unit = $r->Vlr_Unit;
+ 			$cant = $r->Cant;
+ 			$id_moneda = $r->iditem->Moneda;
+ 			$iva = $r->Iva;
 
-			$Cant =$reg['Cant'];
-			$Vlr_Unit =$reg['Vlr_Unit'];
-			$Iva =$reg['Iva'];
+ 			if($id_moneda == Yii::app()->params->moneda_USD){
 
-			if($Iva == 0){
+		        if($iva == 0){
 
-				$Vlr_Total = $Vlr_Unit * $Cant;
+		        	$vlr_total = ($vlr_unit * $tasa_cambio) * $cant;
 
-			}else{
+		        }else{
 
-				$vlr_base = $Vlr_Unit * $Cant;
-				$vlr_iva = (($vlr_base * $Iva) / 100);
-				$Vlr_Total = $vlr_base + $vlr_iva;
+		        	$vlr_base = ($vlr_unit * $tasa_cambio) * $cant;
+		         	$vlr_iva = (($vlr_base * $iva) / 100);
+		        	$vlr_total = $vlr_base + $vlr_iva;
 
-			}
+		        }
 
-			$Moneda =$reg['Moneda'];
+	      	}else{
 
-			$array_total_x_moneda[$Moneda] = $array_total_x_moneda[$Moneda] + $Vlr_Total; 
-			
-		}
+		        if($iva == 0){
 
-		$cadena_total = "";
+		        	$vlr_total = $vlr_unit * $cant;
 
-		foreach ($array_total_x_moneda as $id_moneda => $valor) {
-			$desc_moneda = Dominio::model()->findByPk($id_moneda)->Dominio;
-			$cadena_total .= $desc_moneda.": ".number_format($valor, 0)." / ";
-		}
+		        }else{
 
-		$resp = substr ($cadena_total, 0, -2);
+		        	$vlr_base = $vlr_unit * $cant;
+		        	$vlr_iva = (($vlr_base * $iva) / 100);
+		        	$vlr_total = $vlr_base + $vlr_iva;
 
+		        }
+
+	      	}
+
+	      	$vlr_t += $vlr_total;
+ 		}
+
+		$resp = number_format($vlr_t, 2).' COP';
 		return $resp;
-
  	}
 
  	public function Desccontrato($Id_Contrato) {
 
 		$modelo_cont = Cont::model()->findByPk($Id_Contrato);
-
 		$desc_contrato = $modelo_cont->Id_Contrato.' / '.$modelo_cont->Proveedor.' - '.$modelo_cont->Concepto_Contrato;
-		
 		return $desc_contrato;
 
  	}
@@ -143,15 +150,16 @@ class FactItemCont extends CActiveRecord
 		return array(
 			'Id_Fac' => 'ID',
 			'Id_Contrato' => 'Contrato (ID / Proveedor - Concepto)',
-			'Items' => 'Item(s)',
-			'Numero_Factura' => 'N° de factura',
-			'Fecha_Factura' => 'Fecha de factura',
+			'Numero_Factura' => 'N° de fact.',
+			'Fecha_Factura' => 'Fecha de fact.',
+			'Tasa_Cambio' => 'Tasa de cambio',
 			'Estado' => 'Estado',
 			'Id_Usuario_Creacion' => 'Usuario que creo',
 			'Id_Usuario_Actualizacion' => 'Usuario que actualizó',
 			'Fecha_Creacion' => 'Fecha de creación',
 			'Fecha_Actualizacion' => 'Fecha de actualización',
 			'vlr_total' => 'Vlr. total',
+			'item' => 'Item',
 		);
 	}
 
@@ -175,9 +183,9 @@ class FactItemCont extends CActiveRecord
 
 		$criteria->compare('t.Id_Fac',$this->Id_Fac);
 		$criteria->compare('t.Id_Contrato',$this->Id_Contrato);
-		$criteria->compare('t.Items',$this->Items,true);
 		$criteria->compare('t.Numero_Factura',$this->Numero_Factura,true);
 		$criteria->compare('t.Fecha_Factura',$this->Fecha_Factura,true);
+		$criteria->compare('t.Tasa_Cambio',$this->Tasa_Cambio,true);
 		$criteria->compare('t.Estado',$this->Estado);
 		$criteria->compare('t.Id_Usuario_Creacion',$this->Id_Usuario_Creacion);
 		$criteria->compare('t.Fecha_Creacion',$this->Fecha_Creacion,true);

@@ -97,7 +97,7 @@
     </div>
   </div>
 </div>
-<div class="row">
+<div class="row"> 
   <div class="col-sm-4">
       <div class="form-group">
         <?php echo $form->error($model,'Estado', array('class' => 'pull-right badge bg-red')); ?>
@@ -118,7 +118,7 @@
             ));
         ?>
       </div>
-  </div>   
+  </div>
 </div>	
 
 

@@ -30,7 +30,7 @@ class ReporteController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform actions
-				'actions'=>array('searchequipo', 'zipsoportes','soportesequipo','licdisp','licdisppant','licequipos','loadversiones', 'licequipospant','zipe','soportese','zipl','soportesl'),
+				'actions'=>array('searchequipo', 'zipsoportes','soportesequipo','licdisp','licdisppant','licequipos','loadversiones', 'licequipospant','zipe','soportese','zipl','soportesl','licvenc','licvencpant'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -939,6 +939,37 @@ class ReporteController extends Controller
 	  	}
 
   			 
+	}
+
+	public function actionLicVenc()
+	{		
+		$model=new Reporte;
+		$model->scenario = 'lic_venc';
+
+		$clasif_lic = Yii::app()->db->createCommand('SELECT te.Id_Dominio, te.Dominio FROM TH_DOMINIO te WHERE te.Id_Padre = '.Yii::app()->params->clase_licencia.' AND te.Estado = 1 ORDER BY te.Dominio')->queryAll();
+
+		$empresas = Yii::app()->db->createCommand('SELECT e.Id_Empresa, e.Descripcion FROM TH_EMPRESA e WHERE e.Estado = 1 ORDER BY e.Descripcion')->queryAll();
+
+		if(isset($_POST['Reporte']))
+		{
+			$model=$_POST['Reporte'];
+			$this->renderPartial('lic_venc_resp',array('model' => $model));	
+		}
+
+		$this->render('lic_venc',array(
+			'model'=>$model,
+			'clasif_lic'=>$clasif_lic,
+			'empresas'=>$empresas,
+		));
+	}
+
+	public function actionLicVencPant()
+	{		
+		$empresa_compra = $_POST['empresa_compra'];
+		$clasif = $_POST['clasif'];
+
+		$resultados = UtilidadesReportes::licvencpantalla($empresa_compra, $clasif);
+		echo $resultados;
 	}
 
 }
