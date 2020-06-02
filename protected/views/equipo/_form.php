@@ -56,6 +56,22 @@
     </div>
 </div>
 <div class="row">
+  <div class="col-sm-4">
+      <div class="form-group">
+        <?php echo $form->error($model,'MAC1', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'MAC1'); ?>
+        <?php echo $form->textField($model,'MAC1', array('class' => 'form-control', 'maxlength' => '17', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+      </div>
+  </div>
+  <div class="col-sm-4">
+      <div class="form-group">
+        <?php echo $form->error($model,'MAC2', array('class' => 'pull-right badge bg-red')); ?>
+        <?php echo $form->label($model,'MAC2'); ?>
+        <?php echo $form->textField($model,'MAC2', array('class' => 'form-control', 'maxlength' => '17', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+      </div>
+  </div>
+</div>
+<div class="row">
     <div class="col-sm-4">
         <div class="form-group">
             <?php echo $form->error($model,'Empresa_Compra', array('class' => 'pull-right badge bg-red')); ?>
@@ -169,61 +185,92 @@ $(function() {
 	var pesoPermitido = 1024;
 
 	$("#valida_form").click(function() {
-      var form = $("#equipo-form");
-      var settings = form.data('settings') ;
+    var form = $("#equipo-form");
+    var settings = form.data('settings') ;
 
-      var soporte = $('#Equipo_sop').val();
+    var soporte = $('#Equipo_sop').val();
 
-      if(soporte == ''){
-      	$('#error_sop').html('Soporte no puede ser nulo');
-      	$('#error_sop').show();
-      }
+    if(soporte == ''){
+    	$('#error_sop').html('Soporte no puede ser nulo');
+    	$('#error_sop').show();
+    }
 
-      settings.submitting = true ;
-      $.fn.yiiactiveform.validate(form, function(messages) {
-          if($.isEmptyObject(messages)) {
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              	
-              //se valida si el archivo cargado es valido (1)
-              valid_doc = $('#valid_doc').val();
+    settings.submitting = true ;
+    $.fn.yiiactiveform.validate(form, function(messages) {
+        if($.isEmptyObject(messages)) {
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            	
+            //se valida si el archivo cargado es valido (1)
+            valid_doc = $('#valid_doc').val();
 
-              if(valid_doc == 1){
-              	//se envia el form
-              	$('#buttons').hide();
-              	form.submit();
-              }else{
+            if(valid_doc == 1){
+            	//se envia el form
+            	$('#buttons').hide();
+            	form.submit();
+            }else{
 
-              	settings.submitting = false ;	
-              }
-              
+            	settings.submitting = false ;	
+            }
+            
 
-          } else {
-              settings = form.data('settings'),
-              $.each(settings.attributes, function () {
-                 $.fn.yiiactiveform.updateInput(this,messages,form); 
-              });
-              settings.submitting = false ;
-          }
-      });
-  	});
-
-  	$("#Equipo_sop").change(function () {
-
-  		$('#error_sop').html('');
-    	$('#error_sop').hide();
-
-  		if(validarExtension(this)) {
-
-  	    	if(validarPeso(this)) {
-
-  	    		$('#valid_doc').val(1);
-
-  	    	}
-  		}  
+        } else {
+            settings = form.data('settings'),
+            $.each(settings.attributes, function () {
+               $.fn.yiiactiveform.updateInput(this,messages,form); 
+            });
+            settings.submitting = false ;
+        }
     });
+	});
 
+	$("#Equipo_sop").change(function () {
+
+		$('#error_sop').html('');
+  	$('#error_sop').hide();
+
+		if(validarExtension(this)) {
+
+	    	if(validarPeso(this)) {
+
+	    		$('#valid_doc').val(1);
+
+	    	}
+		}  
+  });
+
+  $("#Equipo_MAC1").on("keydown", function(event) {
+    const BACKSPACE_KEY = 8
+    const COLON_KEY = 186
+    const _colonPositions = [2, 5, 8, 11, 14]
+    const _newValue = $(this).val().trim()
+    const _currentPosition = _newValue.length
+    if (event.keyCode === COLON_KEY) {
+      event.preventDefault()
+    }
+    if (event.keyCode !== BACKSPACE_KEY) {
+      if (_colonPositions.some(position => position === _currentPosition)) {
+        $("#Equipo_MAC1").val(_newValue.concat(':'))
+      }
+    }
+  });
+
+  $("#Equipo_MAC2").on("keydown", function(event) {
+    const BACKSPACE_KEY = 8
+    const COLON_KEY = 186
+    const _colonPositions = [2, 5, 8, 11, 14]
+    const _newValue = $(this).val().trim()
+    const _currentPosition = _newValue.length
+    if (event.keyCode === COLON_KEY) {
+      event.preventDefault()
+    }
+    if (event.keyCode !== BACKSPACE_KEY) {
+      if (_colonPositions.some(position => position === _currentPosition)) {
+        $("#Equipo_MAC2").val(_newValue.concat(':'))
+      }
+    }
+  });
 
 	// Validacion de extensiones permitidas
 	function validarExtension(datos) {

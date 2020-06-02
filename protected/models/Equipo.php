@@ -19,6 +19,8 @@
  * @property integer $Id_Usuario_Actualizacion
  * @property string $Fecha_Actualizacion
  * @property string $Modelo
+ * @property string $MAC1
+ * @property string $MAC2
  *
  * The followings are the available model relations:
  * @property THDOMINIO $tipoEquipo
@@ -49,12 +51,13 @@ class Equipo extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Tipo_Equipo, Serial, Modelo, Empresa_Compra, Fecha_Compra, Proveedor, Numero_Factura, Numero_Inventario, Estado', 'required'),
-			array('Serial','unique','on'=>'create'),
+			array('Tipo_Equipo, Serial, Modelo, MAC1, Empresa_Compra, Fecha_Compra, Proveedor, Numero_Factura, Numero_Inventario, Estado', 'required'),
+			array('Serial, MAC1, MAC2','unique','on'=>'create'),
 			array('Serial', 'uniqueSerial','on'=>'update'),
 			array('Tipo_Equipo, Empresa_Compra, Proveedor, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Serial, Doc_Soporte, Modelo', 'length', 'max'=>200),
 			array('Numero_Factura, Numero_Inventario', 'length', 'max'=>50),
+			array('MAC1, MAC2', 'length', 'max'=>17),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('Id_Equipo, Tipo_Equipo, Serial, Empresa_Compra, Fecha_Compra, Proveedor, Numero_Factura, Numero_Inventario, Doc_Soporte, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
@@ -113,6 +116,8 @@ class Equipo extends CActiveRecord
 			'orderby' => 'Orden de resultados',
 			'sop' => 'Soporte',
 			'Modelo' => 'Modelo',
+			'MAC1' => 'MAC LAN',
+			'MAC2' => 'MAC WAN',
 		);
 	}
 

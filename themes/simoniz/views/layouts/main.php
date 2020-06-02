@@ -397,5 +397,32 @@ function convert_min(e) {
     e.value = e.value.toLowerCase();
 }
 
+function mac(e) {
+
+/*  var keycode = (e.keyCode ? e.keyCode : e.which);
+
+  alert(keycode);
+  e.value = e.value.toUpperCase();
+  //alert(e.keyCode);
+  if(keycode === 46) {*/
+
+
+    if(e.keyCode == 46){console.log('Delete Key Pressed');}
+    /*e.value = e.value.toUpperCase();*/
+
+
+    /*var n_caract = e.value.length;
+    if(n_caract == 2 || n_caract == 5 || n_caract == 8 || n_caract == 11 || n_caract == 14) {
+      e.value = e.value + ':';
+      e.value = e.value.toUpperCase();
+    }else{
+      e.value = e.value;  
+    }*/
+
+  /*}else{
+    alert('delete');
+  }*/
+}
+
 </script>
 

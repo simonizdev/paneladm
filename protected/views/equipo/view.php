@@ -123,6 +123,18 @@
         <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
+                    <label>MAC LAN</label>
+                    <?php echo '<p>'.$model->MAC1.'</p>';?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>MAC WAN</label>
+                    <?php echo '<p>'.$model->MAC2.'</p>';?>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
                     <label>Empresa que compro</label>
                     <?php echo '<p>'.$model->empresacompra->Descripcion.'</p>';?>
                 </div>
@@ -133,6 +145,8 @@
                     <?php echo '<p>'.UtilidadesVarias::textofecha($model->Fecha_Compra).'</p>';?>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Proveedor</label>
@@ -145,8 +159,6 @@
                     <?php echo '<p>'.$model->Numero_Factura.'</p>'; ?>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>N° de Inventario</label>
@@ -159,6 +171,8 @@
                     <?php echo '<p>'.$model->idusuariocre->Usuario.'</p>';?>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Fecha de creación</label>
@@ -171,8 +185,6 @@
                     <?php echo '<p>'.$model->idusuarioact->Usuario.'</p>';?>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-sm-3">
                 <div class="form-group">
                     <label>Fecha de actualización</label>
