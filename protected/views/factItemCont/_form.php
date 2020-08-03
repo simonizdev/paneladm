@@ -330,7 +330,7 @@ function limp_div_msg(){
 }
 
 function cal_total_fact(){
-
+  debugger;
   $(".ajax-loader").fadeIn('fast');
 
   var vlr_total = 0;
@@ -339,9 +339,11 @@ function cal_total_fact(){
 
     var item = $(this).val();
     var vlr_t = parseFloat($('#vt_'+item).val());
-    vlr_total += vlr_t;
+    vlr_total += vlr_t.round(2);
 
   });
+
+   
 
   $("#vlr_total").html(formatNumber(vlr_total)+' COP');
   $(".ajax-loader").fadeOut('fast'); 
@@ -495,7 +497,8 @@ function valida_opciones(){
 }
 
 function formatNumber(num) {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  return num;
+  //.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
 	

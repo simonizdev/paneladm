@@ -64,10 +64,22 @@ class EquipoController extends Controller
 		$licencias->unsetAttributes();  // clear any default values
 		$licencias->Id_Equipo = $id;
 
+		//IPs asociadas a equipo
+		$network=new NetworkEquipo('search');
+		$network->unsetAttributes();  // clear any default values
+		$network->Id_Equipo = $id;
+
+		//IPs activas
+		$network_act= NetworkEquipo::model()->findAllByAttributes(array('Id_Equipo'=>$id, 'Estado'=>1));
+
+		$n_ip_act = count($network_act);
+
 		$this->render('view',array(
 			'model'=> $model,
 			'asociacion'=> $asociacion,
 			'licencias'=> $licencias,
+			'network'=> $network,
+			'n_ip_act'=> $n_ip_act,
 		));
 	}
 

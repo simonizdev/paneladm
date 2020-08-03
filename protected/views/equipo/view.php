@@ -84,6 +84,9 @@
     <button type="button" class="btn btn-success" onclick="location.href = '<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=equipo/admin'; ?>';"><i class="fa fa-reply"></i> Volver </button>
     <?php if ($asociacion == 1) { ?> 
         <button type="button" class="btn btn-success" onclick="location.href = '<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=licenciaEquipo/create&e='.$model->Id_Equipo; ?>';"><i class="fa fa-plus"></i> Asociar licencia a equipo</button>
+    <?php } ?>
+    <?php if ($asociacion == 1 && $n_ip_act < 2) { ?> 
+        <button type="button" class="btn btn-success" onclick="location.href = '<?php echo Yii::app()->getBaseUrl(true).'/index.php?r=network/asig2&e='.$model->Id_Equipo; ?>';"><i class="fa fa-plus"></i> Asociar IP a equipo</button>
     <?php } ?> 
 </div>
 
@@ -91,6 +94,7 @@
     <ul class="nav nav-tabs" style="font-size: 12px !important;">
       <li class="active"><a href="#info" data-toggle="tab">Información</a></li>
       <li><a href="#lic" data-toggle="tab">Licencia(s)</a></li>
+      <li><a href="#network" data-toggle="tab">Red</a></li>
     </ul>
     <div class="tab-content">
         <div class="active tab-pane" id="info">
@@ -240,6 +244,37 @@
                             'url'=>'Yii::app()->createUrl("licenciaEquipo/inact", array("id"=>$data->Id_Lic_Equ, "opc"=>2))',
                             'visible'=> '(Yii::app()->user->getState("permiso_act") == true && $data->Estado == 1)',
                             'options'=>array('title'=>' Desvincular licencia', 'confirm'=>'Esta seguro de desvincular la licencia de este equipo ?'),
+                        ),
+                    )
+                ),
+            ),
+        )); ?>
+      </div>
+      <div class="tab-pane" id="network">
+        <?php $this->widget('zii.widgets.grid.CGridView', array(
+            'id'=>'network-equipo-grid',
+            'dataProvider'=>$network->search(),
+            //'filter'=>$model,
+            'enableSorting' => false,
+            'columns'=>array(
+                array(
+                    'name'=>'ip',
+                    'value'=>'$data->idnetwork->Ip($data->Id_Network)',
+                ),
+                array(
+                    'name' => 'Estado',
+                    'value' => 'UtilidadesVarias::textoestado1($data->Estado)',
+                ),
+                array(
+                    'class'=>'CButtonColumn',
+                    'template'=>'{lib}',
+                    'buttons'=>array(
+                        'lib'=>array(
+                            'label'=>'<i class="fa fa-chain-broken actions text-black"></i>',
+                            'imageUrl'=>false,
+                            'url'=>'Yii::app()->createUrl("network/lib", array("id"=>$data->Id_Network, "opc"=>2))',
+                            'visible'=> '(Yii::app()->user->getState("permiso_act") == true && $data->Estado == 1)',
+                            'options'=>array('title'=>'Liberar IP', 'confirm'=>'Esta seguro de liberar esta IP ?'),
                         ),
                     )
                 ),

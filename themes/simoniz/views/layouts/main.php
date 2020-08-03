@@ -411,13 +411,13 @@ function mac(e) {
     /*e.value = e.value.toUpperCase();*/
 
 
-    /*var n_caract = e.value.length;
+    var n_caract = e.value.length;
     if(n_caract == 2 || n_caract == 5 || n_caract == 8 || n_caract == 11 || n_caract == 14) {
       e.value = e.value + ':';
       e.value = e.value.toUpperCase();
     }else{
       e.value = e.value;  
-    }*/
+    }
 
   /*}else{
     alert('delete');
