@@ -148,7 +148,7 @@ function add_item(){
           if(id_moneda == <?php echo Yii::app()->params->moneda_USD ?>){
 
             if(iva == 0){
-
+              
               var vlr_total = (vlr_unit * tasa_cambio) * cant;
 
             }else{
@@ -177,7 +177,7 @@ function add_item(){
 
           var tabla = $('#table_item');
 
-          tabla.append('<tr class="tr_items" id="tr_'+i+'"><td><input type="hidden" class="items" value="'+i+'">'+desc_item+'</td><td><input type="number" id="cant_'+i+'" value="'+cant+'" onchange="cal_total_x_item('+i+');"></td><td><input type="number" id="vu_'+i+'" value="'+vlr_unit+'" onchange="cal_total_x_item('+i+');"></td><td><input type="hidden" id="moneda_'+i+'" value="'+id_moneda+'">'+moneda+'</td><td><input type="number" id="iva_'+i+'" value="'+iva+'" onchange="cal_total_x_item('+i+');"></td><td><input type="number" id="vt_'+i+'" value="'+vlr_total+'" disabled></td><td><button type="button" class="btn btn-danger btn-xs delete"><i class="fa fa-trash" aria-hidden="true"></i> </button></td></tr>');
+          tabla.append('<tr class="tr_items" id="tr_'+i+'"><td><input type="hidden" class="items" value="'+i+'">'+desc_item+'</td><td><input type="number" id="cant_'+i+'" value="'+cant+'" onchange="cal_total_x_item('+i+');"></td><td><input type="number" id="vu_'+i+'" value="'+vlr_unit+'" onchange="cal_total_x_item('+i+');"></td><td><input type="hidden" id="moneda_'+i+'" value="'+id_moneda+'">'+moneda+'</td><td><input type="number" id="iva_'+i+'" value="'+iva+'" onchange="cal_total_x_item('+i+');"></td><td><input type="text" id="vt_'+i+'" value="'+vlr_total.toFixed(2)+'" disabled></td><td><button type="button" class="btn btn-danger btn-xs delete"><i class="fa fa-trash" aria-hidden="true"></i> </button></td></tr>');
 
           cal_total_fact();
         }
@@ -330,7 +330,7 @@ function limp_div_msg(){
 }
 
 function cal_total_fact(){
-  debugger;
+
   $(".ajax-loader").fadeIn('fast');
 
   var vlr_total = 0;
@@ -339,7 +339,7 @@ function cal_total_fact(){
 
     var item = $(this).val();
     var vlr_t = parseFloat($('#vt_'+item).val());
-    vlr_total += vlr_t.round(2);
+    vlr_total += vlr_t;
 
   });
 
@@ -393,7 +393,7 @@ function cal_total_x_item(item){
 
       }
 
-      $("#vt_"+item).val(vlr_total);
+      $("#vt_"+item).val(vlr_total.toFixed(2));
       $('#btn_save').show();
 
       cal_total_fact();
@@ -497,8 +497,7 @@ function valida_opciones(){
 }
 
 function formatNumber(num) {
-  return num;
-  //.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 }
 
 	
