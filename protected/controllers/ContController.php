@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 class ContController extends Controller
 {
@@ -109,6 +109,8 @@ class ContController extends Controller
 			$model->attributes=$_POST['Cont'];
 			$model->Id_Usuario_Creacion = Yii::app()->user->getState('id_user');
 			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
+			$Fecha_Ren_Can = date_create($model->Fecha_Ren_Can);
+			$model->Fecha_Ren_Can = date_format($Fecha_Ren_Can, 'Y-m-d');
 			$model->Fecha_Creacion = date('Y-m-d H:i:s');
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
  
@@ -144,6 +146,8 @@ class ContController extends Controller
 		if(isset($_POST['Cont']))
 		{
 			$model->attributes=$_POST['Cont'];
+			$Fecha_Ren_Can = date_create($model->Fecha_Ren_Can);
+			$model->Fecha_Ren_Can = date_format($Fecha_Ren_Can, 'Y-m-d');
 			$model->Id_Usuario_Actualizacion = Yii::app()->user->getState('id_user');
 			$model->Fecha_Actualizacion = date('Y-m-d H:i:s');
  
