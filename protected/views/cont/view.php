@@ -197,7 +197,7 @@
                     array(
                         'name'=>'Costo',
                         'value'=>function($data){
-                            return number_format($data->Costo, 0);
+                            return number_format($data->Costo, 2);
                         },
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
@@ -297,7 +297,7 @@
                     array(
                         'name'=>'Vlr_Unit',
                         'value'=>function($data){
-                            return number_format($data->Vlr_Unit, 0);
+                            return number_format($data->Vlr_Unit, 2);
                         },
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),
@@ -312,7 +312,7 @@
                     array(
                         'name'=>'vlr_total',
                         'value'=>function($data){
-                            return number_format($data->VlrTotalItem($data->Id_Item), 0);
+                            return number_format($data->VlrTotalItem($data->Id_Item), 2);
                         },
                         'htmlOptions'=>array('style' => 'text-align: right;'),
                     ),

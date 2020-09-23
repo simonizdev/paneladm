@@ -7,7 +7,7 @@
  * @property integer $Id_Neg
  * @property integer $Id_Contrato
  * @property string $Item
- * @property integer $Costo
+ * @property string $Costo
  * @property integer $Moneda
  * @property string $Porc_Desc
  * @property integer $Estado
@@ -44,8 +44,9 @@ class NegCont extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('Id_Contrato, Item, Costo, Moneda, Porc_Desc, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'required'),
-			array('Id_Contrato, Costo, Moneda, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
+			array('Id_Contrato, Moneda, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Porc_Desc', 'length', 'max'=>5),
+			array('Costo', 'length', 'max'=>18),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('Id_Neg, Id_Contrato, Item, Costo, Moneda, Porc_Desc, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),
@@ -71,7 +72,7 @@ class NegCont extends CActiveRecord
 
 		$costo_final = ($costo - (($costo * $porc_desc) / 100));
 
-		return number_format($costo_final, 0);
+		return number_format($costo_final, 2);
 
  	}
 

@@ -177,7 +177,7 @@ function add_item(){
 
           var tabla = $('#table_item');
 
-          tabla.append('<tr class="tr_items" id="tr_'+i+'"><td><input type="hidden" class="items" value="'+i+'">'+desc_item+'</td><td><input type="number" id="cant_'+i+'" value="'+cant+'" onchange="cal_total_x_item('+i+');"></td><td><input type="number" id="vu_'+i+'" value="'+vlr_unit+'" onchange="cal_total_x_item('+i+');"></td><td><input type="hidden" id="moneda_'+i+'" value="'+id_moneda+'">'+moneda+'</td><td><input type="number" id="iva_'+i+'" value="'+iva+'" onchange="cal_total_x_item('+i+');"></td><td><input type="text" id="vt_'+i+'" value="'+vlr_total.toFixed(2)+'" disabled></td><td><button type="button" class="btn btn-danger btn-xs delete"><i class="fa fa-trash" aria-hidden="true"></i> </button></td></tr>');
+          tabla.append('<tr class="tr_items" id="tr_'+i+'"><td><input type="hidden" class="items" value="'+i+'">'+desc_item+'</td><td><input type="number" id="cant_'+i+'" value="'+cant+'" onchange="cal_total_x_item('+i+');"></td><td><input type="number" id="vu_'+i+'" value="'+vlr_unit+'" onchange="cal_total_x_item('+i+');" step = "0.01"></td><td><input type="hidden" id="moneda_'+i+'" value="'+id_moneda+'">'+moneda+'</td><td><input type="number" id="iva_'+i+'" value="'+iva+'" onchange="cal_total_x_item('+i+');"></td><td><input type="text" id="vt_'+i+'" value="'+vlr_total.toFixed(2)+'" disabled></td><td><button type="button" class="btn btn-danger btn-xs delete"><i class="fa fa-trash" aria-hidden="true"></i> </button></td></tr>');
 
           cal_total_fact();
         }

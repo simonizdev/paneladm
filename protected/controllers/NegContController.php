@@ -205,7 +205,7 @@ class NegContController extends Controller
 
 		$costo_final = ($costo - (($costo * $porc_desc) / 100));
 
-		echo number_format($costo_final, 0);
+		echo number_format($costo_final, 2);
 	}
 
 }

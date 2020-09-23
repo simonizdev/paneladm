@@ -119,7 +119,7 @@ class FactItemContController extends Controller
 						}
 
 						if($vlr_u_act != $vlr_u_nue){
-							$texto_novedad .= "Vlr. unit.: ".number_format($vlr_u_act, 0)." / ".number_format($vlr_u_nue, 0).", ";
+							$texto_novedad .= "Vlr. unit.: ".number_format($vlr_u_act, 2)." / ".number_format($vlr_u_nue, 2).", ";
 							$modelo_item_cont->Vlr_Unit = $vlr_u_nue;
 						}
 
@@ -260,11 +260,11 @@ class FactItemContController extends Controller
 		$array_info['item'] = $item;
 		$array_info['desc_item'] = $desc_item;
 		$array_info['cant'] = $cant;
-		$array_info['vlr_unit'] = $vlr_unit;
+		$array_info['vlr_unit'] = str_replace(array('.', ','), array('', '.'), $vlr_unit);
 		$array_info['iva'] = $iva;
 		$array_info['moneda'] = $moneda;
 
-		$resp = array('item' => intval($item), 'desc_item' => $desc_item, 'cant' => intval($cant), 'vlr_unit' => intval($vlr_unit), 'iva' => intval($iva), 'id_moneda' => intval($id_moneda), 'moneda' => $moneda);
+		$resp = array('item' => intval($item), 'adesc_item' => $desc_item, 'cant' => intval($cant), 'vlr_unit' => $vlr_unit, 'iva' => intval($iva), 'id_moneda' => intval($id_moneda), 'moneda' => $moneda);
 
 	    echo json_encode($resp);
 

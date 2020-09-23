@@ -111,7 +111,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'value'=>'$data->DescItem($data->Id_Item)',               
         ),
         'Cant',
-        'Vlr_Unit',
+        array(
+            'name'=>'Vlr_Unit',
+            'value'=>function($data){
+                return number_format($data->Vlr_Unit, 2);
+            },
+            'htmlOptions'=>array('style' => 'text-align: right;'),
+        ),
         array(
             'name'=>'moneda',
             'value'=>'$data->iditem->moneda->Dominio',               

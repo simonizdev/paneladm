@@ -42,7 +42,7 @@
     	<div class="form-group">
     		<?php echo $form->error($model,'Costo', array('class' => 'pull-right badge bg-red')); ?>
           	<?php echo $form->label($model,'Costo'); ?>
-		    <?php echo $form->numberField($model,'Costo', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
+		    <?php echo $form->numberField($model,'Costo', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number', 'min' => '0', 'step' => '0.01')); ?>
         </div>
     </div>
     <div class="col-sm-4">

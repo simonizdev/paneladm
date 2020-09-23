@@ -10,7 +10,7 @@
  * @property string $Item
  * @property string $Descripcion
  * @property integer $Cant
- * @property integer $Vlr_Unit
+ * @property string $Vlr_Unit
  * @property integer $Moneda
  * @property integer $Iva
  * @property integer $Estado
@@ -46,8 +46,9 @@ class ItemCont extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('Id_Contrato, Id, Item, Descripcion, Cant, Moneda, Vlr_Unit, Iva, Estado', 'required'),
-			array('Id_Contrato, Cant, Moneda, Vlr_Unit, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
+			array('Id_Contrato, Cant, Moneda, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Id, Item', 'length', 'max'=>200),
+			array('Vlr_Unit', 'length', 'max'=>18),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('Id_Item, Id_Contrato, Id, Item, Descripcion, Cant, Vlr_Unit, Estado, Id_Usuario_Creacion, Fecha_Creacion, Id_Usuario_Actualizacion, Fecha_Actualizacion', 'safe', 'on'=>'search'),

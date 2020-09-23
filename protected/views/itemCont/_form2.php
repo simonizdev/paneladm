@@ -56,7 +56,7 @@
     	<div class="form-group">
     		<?php echo $form->error($model,'Vlr_Unit', array('class' => 'pull-right badge bg-red')); ?>
           	<?php echo $form->label($model,'Vlr_Unit'); ?>
-		    <?php echo $form->numberField($model,'Vlr_Unit', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number')); ?>
+		    <?php echo $form->numberField($model,'Vlr_Unit', array('class' => 'form-control', 'autocomplete' => 'off', 'type' => 'number', 'min' => '0', 'step' => '0.01')); ?>
         </div>
     </div>
     <div class="col-sm-4">
