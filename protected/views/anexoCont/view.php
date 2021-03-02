@@ -63,35 +63,50 @@ $(function() {
 
 });
 
-function renderPDF(url, canvasContainer, options) {
+function renderPdfByUrl(url) {
+    var currPage = 1; 
+    var numPages = 0;
+    var thePDF = null;
 
-    var options = options || { scale: 1 };
-        
-    function renderPage(page) {
-        var viewport = page.getViewport(options.scale);
-        var canvas = document.createElement('canvas');
-        var ctx = canvas.getContext('2d');
-        var renderContext = {
-          canvasContext: ctx,
-          viewport: viewport
-        };
-        
+    //This is where you start
+    PDFJS.getDocument(url).then(function(pdf) {
+
+        //Set PDFJS global object (so we can easily access in our page functions
+        thePDF = pdf;
+
+        //How many pages it has
+        numPages = pdf.numPages;
+
+        //Start with first page
+        pdf.getPage(1).then(handlePages);
+    });
+
+
+    function handlePages(page) {
+        //This gives us the page's dimensions at full scale
+        var viewport = page.getViewport(1);
+
+        //We'll create a canvas for each page to draw it on
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext('2d');
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
-        canvasContainer.appendChild(canvas);
-        
-        page.render(renderContext);
-    }
-    
-    function renderPages(pdfDoc) {
-        for(var num = 1; num <= pdfDoc.numPages; num++)
-            pdfDoc.getPage(num).then(renderPage);
-    }
+        //Draw it on the canvas
+        page.render({
+            canvasContext: context,
+            viewport: viewport
+        });
 
-    PDFJS.disableWorker = true;
-    PDFJS.getDocument(url).then(renderPages);
+        //Add it to the web page
+        document.getElementById('viewer').appendChild(canvas);
 
+        //Move to next page
+        currPage++;
+        if (thePDF !== null && currPage <= numPages) {
+            thePDF.getPage(currPage).then(handlePages);
+        }
+    }
 }
    
 </script> 
@@ -104,5 +119,5 @@ function renderPDF(url, canvasContainer, options) {
 
 
 <script type="text/javascript">
-renderPDF('<?php echo Yii::app()->getBaseUrl(true).'/images/docs_contratos/'.$model->Doc_Soporte; ?>', document.getElementById('viewer'));
-</script>  
+renderPdfByUrl('<?php echo Yii::app()->getBaseUrl(true).'/images/docs_contratos/'.$model->Doc_Soporte; ?>');
+</script> 
