@@ -96,7 +96,7 @@
 $(function() {
 
 	var extensionesValidas = ".pdf";
-	var pesoPermitido = 5120;
+	var pesoPermitido = 10240;
 
 	$("#valida_form").click(function() {
       var form = $("#anexo-cont-form");

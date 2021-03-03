@@ -55,7 +55,7 @@ class Cont extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Area, Observaciones, Periodicidad, Dias_Alerta, Contacto, Telefono_Contacto, Email_Contacto, Estado', 'required'),
+			array('Empresa, Proveedor, Concepto_Contrato, Fecha_Inicial, Fecha_Final, Fecha_Ren_Can, Area, Observaciones, Periodicidad, Dias_Alerta, Estado', 'required'),
 			array('Empresa, Periodicidad, Dias_Alerta, Estado, Id_Usuario_Creacion, Id_Usuario_Actualizacion', 'numerical', 'integerOnly'=>true),
 			array('Proveedor, Area, Contacto, Telefono_Contacto, Email_Contacto', 'length', 'max'=>100),
 			array('Concepto_Contrato', 'length', 'max'=>200),
