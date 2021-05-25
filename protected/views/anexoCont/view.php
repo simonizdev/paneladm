@@ -54,7 +54,7 @@
 $(function() {
 
     $('.ajax-loader').fadeIn('fast');
-    setTimeout(function(){ $('.ajax-loader').fadeOut('fast'); }, 3000);
+    //setTimeout(function(){ $('.ajax-loader').fadeOut('fast'); }, 3000);
 
     $('#toogle_button').click(function(){
         $('#viewer').toggle('fast');
@@ -100,6 +100,7 @@ function renderPdfByUrl(url) {
 
         //Add it to the web page
         document.getElementById('viewer').appendChild(canvas);
+        setTimeout(function(){ $('.ajax-loader').fadeOut('fast'); }, 3000);
 
         //Move to next page
         currPage++;
