@@ -18,6 +18,27 @@
 
 
 <div class="row">
+  <div class="col-sm-4">
+        <div class="form-group">
+            <?php echo $form->error($model,'Tipo', array('class' => 'pull-right badge bg-red')); ?>
+            <?php echo $form->label($model,'Tipo'); ?>
+            <?php $lista_tipos = array(1 => 'CLIENTE', 2 => 'PROVEEDOR'); ?>
+            <?php
+                $this->widget('ext.select2.ESelect2',array(
+                    'name'=>'Cont[Tipo]',
+                    'id'=>'Cont_Tipo',
+                    'data'=>$lista_tipos,
+                    'value' => $model->Tipo,
+                    'htmlOptions'=>array(),
+                    'options'=>array(
+                        'placeholder'=>'Seleccione...',
+                        'width'=> '100%',
+                        'allowClear'=>true,
+                    ),
+                ));
+            ?>  
+        </div>
+    </div>
  	  <div class="col-sm-4">
         <div class="form-group">
             <?php echo $form->error($model,'Empresa', array('class' => 'pull-right badge bg-red')); ?>
@@ -40,11 +61,13 @@
     </div>
   	<div class="col-sm-4">
       	<div class="form-group">
-      		<?php echo $form->error($model,'Proveedor', array('class' => 'pull-right badge bg-red')); ?>
-      		<?php echo $form->label($model,'Proveedor'); ?>
-      		<?php echo $form->textField($model,'Proveedor', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
+      		<?php echo $form->error($model,'Razon_Social', array('class' => 'pull-right badge bg-red')); ?>
+      		<?php echo $form->label($model,'Razon_Social'); ?>
+      		<?php echo $form->textField($model,'Razon_Social', array('class' => 'form-control', 'maxlength' => '200', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
       	</div>
   	</div>
+</div>
+<div class="row">
   	<div class="col-sm-4">
       	<div class="form-group">
       		<?php echo $form->error($model,'Concepto_Contrato', array('class' => 'pull-right badge bg-red')); ?>
@@ -52,9 +75,7 @@
       		<?php echo $form->textField($model,'Concepto_Contrato', array('class' => 'form-control', 'maxlength' => '200', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
       	</div>
   	</div>
-</div>
-<div class="row">
- 	<div class="col-sm-4">
+ 	  <div class="col-sm-4">
       	<div class="form-group">
       		<?php echo $form->error($model,'Contacto', array('class' => 'pull-right badge bg-red')); ?>
       		<?php echo $form->label($model,'Contacto'); ?>
@@ -68,6 +89,8 @@
       		<?php echo $form->textField($model,'Telefono_Contacto', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off', 'onkeyup' => 'convert_may(this)')); ?>
       	</div>
   	</div>
+</div>
+<div class="row">
   	<div class="col-sm-4">
       	<div class="form-group">
       		<?php echo $form->error($model,'Email_Contacto', array('class' => 'pull-right badge bg-red')); ?>
@@ -75,9 +98,7 @@
       		<?php echo $form->textField($model,'Email_Contacto', array('class' => 'form-control', 'maxlength' => '100', 'autocomplete' => 'off')); ?>
       	</div>
   	</div>
-</div>
-<div class="row">
-  <div class="col-sm-4">
+    <div class="col-sm-4">
     <div class="form-group">
           <?php echo $form->error($model,'Periodicidad', array('class' => 'pull-right badge bg-red')); ?>
           <?php echo $form->label($model,'Periodicidad'); ?>

@@ -25,7 +25,7 @@
 <div class="row">
     <div class="col-sm-8">
         <div class="form-group">
-            <label>Contrato (ID / Proveedor - Concepto)</label>
+            <label>ID contrato / Tipo (Razón social - Concepto)</label>
             <?php  
             $mc = new Cont;
             $desc_cont = $mc->Desccontrato($model->Id_Contrato);

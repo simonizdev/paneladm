@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-sm-9">
                     <div class="form-group">
-                        <label>ID contrato</label>
+                        <label>ID contrato / Tipo (Razón social - Concepto)</label>
                         <?php echo '<p>'.$model->DescContrato($model->Id_Contrato).'</p>';?>
                     </div>
                 </div>

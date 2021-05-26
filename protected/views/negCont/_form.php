@@ -17,7 +17,7 @@
 )); ?>
 
 <div class="row">
-  	<div class="col-sm-4">
+  	<div class="col-sm-8">
         <div class="form-group">
           <?php echo $form->error($model,'Id_Contrato', array('class' => 'pull-right badge bg-red')); ?>
     			<?php echo $form->label($model,'Id_Contrato'); ?>
@@ -29,7 +29,7 @@
     			?>          
         </div>
     </div>
-    <div class="col-sm-8">
+    <div class="col-sm-4">
       <div class="form-group">
             <?php echo $form->error($model,'Item', array('class' => 'pull-right badge bg-red')); ?>
             <?php echo $form->label($model,'Item'); ?>
